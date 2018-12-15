@@ -4,7 +4,6 @@
 
 Serial      p(USBTX, USBRX);
 
-
 Camera::Camera()
 {
     write_buff_addr = FrameBuffer_Video_A;
