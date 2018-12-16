@@ -40,7 +40,7 @@
 #define     STOP                0x03
 #define     ERROR               0xff
 
-#define     SPEED               40
+#define     SPEED               50
 #define     mem_count           6
 #define     MEMORY
 //Constructor
