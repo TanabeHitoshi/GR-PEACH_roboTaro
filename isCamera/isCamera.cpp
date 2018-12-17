@@ -31,6 +31,19 @@ int isCamera::isCross(void)
     else return 0;
 }
 //--------------------------------------------------------------------//
+//cheack Crank
+// 0-> non  1-> right crank  -1-> left crank
+int isCamera::isCrank(void)
+{
+    int hl;
+
+    hl = 0;
+    if(BlackCount > 1){
+    	hl = isHalf_Line();
+    }
+    return hl;
+}
+//--------------------------------------------------------------------//
 
 //cheack half
 // 0-> non  1-> right half  -1-> left half
