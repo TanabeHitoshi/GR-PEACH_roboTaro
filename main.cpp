@@ -77,6 +77,8 @@ volatile unsigned long  cnt0;           /* Used by timer function   */
 volatile unsigned long  cnt1;           /* Used within main         */
 volatile int            pattern;        /* Pattern numbers          */
 volatile int            status_set;     /* Status                   */
+int						memory[10000][5];
+int						m_number;
 
 /* Trace by image processing */
 
@@ -132,6 +134,7 @@ int main( void )
     long old_tripmeter;
     int mem;                               //記録回数
     int saka;
+
     /* NTSC-Video */
     DisplayBase::graphics_error_t error;
 
@@ -243,6 +246,7 @@ int main( void )
     pc.printf("Hello GR-OEACH\n\r");
 
     while(1) {
+    	if(pattern > 10 && pattern < 1000 && d.pushsw_get()) pattern = 1000;
         c.Capture();
 //        c.Binarization_view();
 //        c.Full_Binarization_view();
@@ -269,6 +273,7 @@ int main( void )
                     m.Max_Speed = SPEED;
                     d.led_OUT(0x3);
                     cnt1 = 0;
+                    m_number = 0;
                     l = 0;
                     cntLED = 300;
                     pattern = 2;
@@ -332,7 +337,7 @@ int main( void )
                 /* クランク検知   */
                 if(c.aa > 0 || c.aa < -0){
                     clankLR = c.isHalf_Line();
-                    if(c.isHalf_Line() != 0){
+                    if(c.isCrank() != 0){
                         pattern = 30;
                         old_tripmeter = m.get_tripmeter();
      //                  pc.printf("clank tripmeter = %ld\n\r",old_tripmeter);
@@ -540,6 +545,33 @@ int main( void )
                     m.motor(0,0,0);                    
                 }
                 break; 
+            case 1000: //ログの出力
+            	m.motor(0,0,0);
+            	m.handle( 0 );
+            	wait(2.0);
+            	pattern = 1010;
+            	cntLED = 300;
+            break;
+            case 1010:
+                if( d.pushsw_get() ){
+                	pattern = 1020;
+                	m_number = 0;
+                }
+                if( cnt1 < cntLED ) {
+                    d.led_OUT( 0x1 );
+                } else if( cnt1 < cntLED*2 ) {
+                    d.led_OUT( 0x2 );
+                } else {
+                    cnt1 = 0;
+                }
+            break;
+            case 1020:
+            	pc.printf("%d,%d,%d,%d,%d\r\n",memory[m_number][0],memory[m_number][1],memory[m_number][2],memory[m_number][3],memory[m_number][4]);
+            	if(m_number > 10000) pattern = 1030;
+            break;
+            case 1030:
+            	d.led_OUT(0x00);
+            break;
             default:
                 break;
         }
@@ -571,6 +603,13 @@ void intTimer( void )
 
             break;
         case 33:
+        	if(pattern > 10 && pattern < 1000){
+        		memory[m_number][0] = pattern;
+        		memory[m_number][1] = c.aa;
+        		memory[m_number][2] = c.cc;
+        		memory[m_number][3] = c.Center[19];
+        		m_number++;
+         	}
             counter = 0;
             break;
         default:
