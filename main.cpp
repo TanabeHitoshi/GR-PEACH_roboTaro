@@ -40,8 +40,10 @@
 #define     ERROR               0xff
 
 #define     SPEED               40
+#define		MAX_MEMORY			10000
 #define     mem_count           6
 #define     MEMORY
+
 //Constructor
 //------------------------------------------------------------------//
 Ticker      interrput;
@@ -77,7 +79,7 @@ volatile unsigned long  cnt0;           /* Used by timer function   */
 volatile unsigned long  cnt1;           /* Used within main         */
 volatile int            pattern;        /* Pattern numbers          */
 volatile int            status_set;     /* Status                   */
-int						memory[10000][5];
+int						memory[MAX_MEMORY][5];
 int						m_number;
 
 /* Trace by image processing */
@@ -568,7 +570,7 @@ int main( void )
             break;
             case 1020:
             	pc.printf("%d,%d,%d,%d,%d\r\n",memory[m_number][0],memory[m_number][1],memory[m_number][2],memory[m_number][3],memory[m_number][4]);
-            	if(m_number > 10000) pattern = 1030;
+            	if(m_number > MAX_MEMORY) pattern = 1030;
             break;
             case 1030:
             	d.led_OUT(0x00);
@@ -610,7 +612,7 @@ void intTimer( void )
         		memory[m_number][2] = c.cc;
         		memory[m_number][3] = c.Center[19];
         		m_number++;
-        		if(m_number > 10000)m_number = 10000;
+        		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;
          	}
             counter = 0;
             break;
