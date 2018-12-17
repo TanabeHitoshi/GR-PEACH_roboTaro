@@ -60,24 +60,26 @@ int isCamera::isSideLine(void)
     int cnt;
     int center_X = 40;
     int L,R;
-    int i;
-    int    sideWide;
+    int sideWide;
 
-    R = 0; L = 0;
-    for(cnt = 10; cnt < 40; cnt++){
-         if(R == 0){
-            if(Image_binarization[center_X + cnt][5] == 1)R = cnt;     //右に発見
-         }
-         if(L == 0){
-            if(Image_binarization[center_X - cnt][5] == 1)L = cnt;      //左に発見
-         }
+    LR = 0;
+    if(aa > 3 && aa < -3){
+    	R = 0; L = 0;
+		for(cnt = 10; cnt < 40; cnt++){
+			 if(R == 0){
+				if(Image_binarization[center_X + cnt][5] == 1)R = cnt;     //右に発見
+			 }
+			 if(L == 0){
+				if(Image_binarization[center_X - cnt][5] == 1)L = cnt;      //左に発見
+			 }
+		}
+
+		sideWide = R - L;
+	//   printf("L = %d    R = %d  R-L %d\r\n\r\n",L,R,R-L);
+		if(sideWide > 30 )LR = -1;
+		else if(sideWide < -30 )LR = 1;
+		else LR = 0;
     }
-
-    sideWide = R - L;
-//   printf("L = %d    R = %d  R-L %d\r\n\r\n",L,R,R-L);
-    if(sideWide > 30 )LR = -1;
-    else if(sideWide < -30 )LR = 1;
-    else LR = 0;
     return LR;
 }
 //--------------------------------------------------------------------//
