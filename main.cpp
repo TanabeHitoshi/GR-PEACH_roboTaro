@@ -545,6 +545,7 @@ int main( void )
                     m.motor(0,0,0);                    
                 }
                 break; 
+
             case 1000: //ログの出力
             	m.motor(0,0,0);
             	m.handle( 0 );
@@ -609,6 +610,7 @@ void intTimer( void )
         		memory[m_number][2] = c.cc;
         		memory[m_number][3] = c.Center[19];
         		m_number++;
+        		if(m_number > 10000)m_number = 10000;
          	}
             counter = 0;
             break;
