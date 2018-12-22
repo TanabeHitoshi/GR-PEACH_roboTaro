@@ -254,6 +254,7 @@ int main( void )
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
 //            pc.printf("c.isSideLine %d\r\n",c.isSideLine());
+//        pc.printf("pattern = %d\n\r",pattern);
             
         if(c.isCurve() == 1 ){
             m.Max_Speed = 50;
@@ -569,7 +570,8 @@ int main( void )
                 }
             break;
             case 1020:
-            	pc.printf("%d,%d,%d,%d,%d\r\n",memory[m_number][0],memory[m_number][1],memory[m_number][2],memory[m_number][3],memory[m_number][4]);
+            	pc.printf("%d,%d,%d,%d,%d,%d\r\n",m_number,memory[m_number][0],memory[m_number][1],memory[m_number][2],memory[m_number][3],memory[m_number][4]);
+            	m_number++;
             	if(m_number > MAX_MEMORY) pattern = 1030;
             break;
             case 1030:
@@ -606,11 +608,12 @@ void intTimer( void )
 
             break;
         case 33:
-        	if(pattern > 10 && pattern < 1000){
+        	if(pattern > 9 && pattern < 1000){
         		memory[m_number][0] = pattern;
         		memory[m_number][1] = c.aa;
         		memory[m_number][2] = c.cc;
         		memory[m_number][3] = c.Center[19];
+        		memory[m_number][4] = iServo;
         		m_number++;
         		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;
          	}
@@ -690,8 +693,10 @@ void led_status_set( int set )
 //------------------------------------------------------------------//
 void ServoControl_process( void )
 {
-    if(c.isCurve())   iServo = c.CurvePID();
-    else                iServo = c.StrightPID();
+	if(c.cc != -999){
+		if(c.isCurve())   iServo = c.CurvePID();
+		else                iServo = c.StrightPID();
+	}
 }
 
 // Standard deviation

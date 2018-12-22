@@ -82,7 +82,7 @@ void Camera::image_thinning_out(void)
     }
     for(y = 0; y < 40; y++) {
         for(x = 0; x < 80; x++) {
-            Image_thinning_out[x][y] = Raw_Y_component[x*1+120][y*2+60];
+            Image_thinning_out[x][y] = Raw_Y_component[x*2+80][y*2+60];
             if(Image_thinning_out[x][y] > Max[y]) Max[y] = Image_thinning_out[x][y];
             if(Image_thinning_out[x][y] < Min[y]) Min[y] = Image_thinning_out[x][y];
         }
@@ -115,7 +115,7 @@ void Camera::Binarization(void)
     BlackCount = 0;
     for(y = 0; y < 40; y++) {
         //Determine the threshold
-        Ave[y] = (Max[y] + Min[y]) * 2 / 3;
+        Ave[y] = (Max[y] + Min[y]) * 3 / 5;
         // number of White  to zero
         White[y] = 0;
         if(Max[y] > 200) {
@@ -417,7 +417,7 @@ int Camera::CurvePID(void)
             center = cc;                   // slop and intercept
         }
 */
-        center = Center[19];
+        center = cc;
 //        center = Center[19];
         iCenter +=  center - preCenter;
         h = center * Kp + iCenter * Ki + (center - preCenter) * Kd;
