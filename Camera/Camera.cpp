@@ -82,7 +82,7 @@ void Camera::image_thinning_out(void)
     }
     for(y = 0; y < 40; y++) {
         for(x = 0; x < 80; x++) {
-            Image_thinning_out[x][y] = Raw_Y_component[x*2+80][y*2+60];
+            Image_thinning_out[x][y] = Raw_Y_component[x*3+40][y*2+80];
             if(Image_thinning_out[x][y] > Max[y]) Max[y] = Image_thinning_out[x][y];
             if(Image_thinning_out[x][y] < Min[y]) Min[y] = Image_thinning_out[x][y];
         }
@@ -162,6 +162,7 @@ void Camera::Binarization_view(void)
         }
         p.printf( "Max%3d Min%3d Ave%3d Width%3d Center%3d  White%3d\n\r",Max[y],Min[y],Ave[y],Width[y],Center[y],White[y]);
     }
+    p.printf( "aa%3d bb%3d cc%3d\n\r",aa,bb,cc);
 }
 //------------------------------------------------------------------//
 
@@ -392,7 +393,7 @@ void Camera::LeastSquare(void)
             E += (40-y);
         }
     }
-    if(count > 30) {
+    if(count > 20) {
         aa = -Ka*(count*D - C*E) / (count*B - E*E);
         bb = (B*C - D*E) / (count*B - E*E);
         cc = 20 * (count*D - C*E) / (count*B - E*E) + (B*C - D*E) / (count*B - E*E);
@@ -410,14 +411,14 @@ int Camera::CurvePID(void)
     static int    h;
 
     if(aa != -999) {
-/*
+
         if(aa > 10 || aa < -10) {
             center = Center[19];            // Out side white line
         } else {
             center = cc;                   // slop and intercept
         }
-*/
-        center = cc;
+
+//        center = cc;
 //        center = Center[19];
         iCenter +=  center - preCenter;
         h = center * Kp + iCenter * Ki + (center - preCenter) * Kd;

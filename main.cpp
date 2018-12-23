@@ -570,7 +570,7 @@ int main( void )
                 }
             break;
             case 1020:
-            	pc.printf("%d,%d,%d,%d,%d,%d\r\n",m_number,memory[m_number][0],memory[m_number][1],memory[m_number][2],memory[m_number][3],memory[m_number][4]);
+            	pc.printf("%d,%4d,%4d,%4d,%4d,%4d\r\n",m_number,memory[m_number][0],memory[m_number][1],memory[m_number][2],memory[m_number][3],memory[m_number][4]);
             	m_number++;
             	if(m_number > MAX_MEMORY) pattern = 1030;
             break;
@@ -693,10 +693,10 @@ void led_status_set( int set )
 //------------------------------------------------------------------//
 void ServoControl_process( void )
 {
-	if(c.cc != -999){
+//	if(c.cc != -999){
 		if(c.isCurve())   iServo = c.CurvePID();
 		else                iServo = c.StrightPID();
-	}
+//	}
 }
 
 // Standard deviation

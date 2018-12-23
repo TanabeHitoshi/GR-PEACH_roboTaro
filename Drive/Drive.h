@@ -9,7 +9,7 @@
 #define     SERVO_PWM_CYCLE     33332   /* SERVO PWM period         */
 /* 16ms   P0φ/16 = 0.48us   */
 //#define     SERVO_CENTER        3224    /* 1.5ms / 0.48us - 1 = 3124*/
-#define     SERVO_CENTER        3174    /* 1.5ms / 0.48us - 1 = 3124*/
+#define     SERVO_CENTER        3114    /* 1.5ms / 0.48us - 1 = 3124*/
 #define     HANDLE_STEP         18      /* 1 degree value           */
 //Handle
 #define     ANLOG_STEP          60      /*                          */
