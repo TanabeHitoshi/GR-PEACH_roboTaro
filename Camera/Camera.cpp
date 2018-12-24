@@ -76,6 +76,7 @@ void Camera::image_thinning_out(void)
     int            x;
     int            y;
 
+    /* ライントレース用のデータ */
     for(y = 0; y < 40; y++) {
         Max[y] = 0;
         Min[y] = 255;
@@ -87,6 +88,19 @@ void Camera::image_thinning_out(void)
             if(Image_thinning_out[x][y] < Min[y]) Min[y] = Image_thinning_out[x][y];
         }
     }
+    /* アウトラインを検出用データ */
+    for(y = 0; y < 10; y++) {
+        Max2[y] = 0;
+        Min2[y] = 255;
+    }
+    for(y = 0; y < 20; y++) {
+        for(x = 0; x < 80; x++) {
+            Image_thinning_out2[x][y] = Raw_Y_component[x*4+0][y*2+10];
+            if(Image_thinning_out2[x][y] > Max2[y]) Max2[y] = Image_thinning_out2[x][y];
+            if(Image_thinning_out2[x][y] < Min2[y]) Min2[y] = Image_thinning_out2[x][y];
+        }
+    }
+
 }
 //------------------------------------------------------------------//
 
@@ -111,6 +125,38 @@ void Camera::Binarization(void)
 {
     int x;
     int y;
+
+     for(y = 0; y < 20; y++) {
+        //Determine the threshold
+        Ave2[y] = (Max2[y] + Min2[y]) * 3 / 5;
+        // number of White  to zero
+//        White[y] = 0;
+        if(Max2[y] > 200) {
+            //When white is a straight line
+            if(Min2[y] > 200) {
+                for(x = 0; x < 10; x++) {
+                    Image_binarization2[x][y] = 1;
+//                    White[y]++;
+                }
+            } else {
+                for(x = 0; x < 80; x++) {
+                    if( Image_thinning_out2[x][y] >  Ave2[y]) {
+                        Image_binarization2[x][y] = 1;   //white
+//                        White[y]++;
+                    } else {
+                        Image_binarization2[x][y] = 0;   //black
+                    }
+                }
+            }
+//            if(White[y] == 0)BlackCount++;
+        } else {
+            //When black is a straight line
+//            BlackCount++;
+            for(x = 0; x < 80; x++) {
+                Image_binarization2[x][y] = 0;
+            }
+        }
+    }
 
     BlackCount = 0;
     for(y = 0; y < 40; y++) {
@@ -144,6 +190,7 @@ void Camera::Binarization(void)
             }
         }
     }
+
 }
 //------------------------------------------------------------------//
 
@@ -165,7 +212,23 @@ void Camera::Binarization_view(void)
     p.printf( "aa%3d bb%3d cc%3d\n\r",aa,bb,cc);
 }
 //------------------------------------------------------------------//
-
+// Bainarization viewer
+void Camera::Binarization2_view(void)
+{
+    int x;
+    int y;
+    p.printf("\033[%dA" ,40);
+    for(y=0; y<10; y++) {
+        for(x=0; x<80; x++) {
+            if(Image_binarization2[x][y] == 1)
+                p.printf("1");
+            else
+                p.printf(" ");
+        }
+        p.printf( "Max%3d Min%3d Ave%3d Width%3d Center%3d  White%3d\n\r",Max[y],Min[y],Ave[y],Width[y],Center[y],White[y]);
+    }
+}
+//------------------------------------------------------------------//
 // Full Bainarization
 void Camera::Full_Binarization(void)
 {
@@ -425,7 +488,7 @@ int Camera::CurvePID(void)
         preCenter = center;
         prepreCenter = preCenter;
     } else {
-        center = Center[38];                    // slop and intercept
+        center = Center[19];                    // slop and intercept
         iCenter +=  center - preCenter;
         h = center * Kp + iCenter * Ki + (center - preCenter) * Kd;
         preCenter = center;
