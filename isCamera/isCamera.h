@@ -7,13 +7,14 @@
 #include "DisplayBace.h" 
 #include "Camera.h"
 
-#define     CV 8
+#define     CV 15
 
 class isCamera : public Camera{
     public:
 //        isCamera( void );                    //コンストラクタ
         void Capture(void);                 // カメラの撮影
         int isCross(void);                  // クロスラインのチェック
+        int isCrank(void);					// クランクのチェック
         int isHalf_Line(void);              // ハーフラインのチェック
         int isSideLine(void);               // side white line check
         int Curve_value(void);              //カーブの大きさを計算

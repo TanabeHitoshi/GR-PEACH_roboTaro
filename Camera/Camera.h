@@ -54,6 +54,7 @@ public:
  
     void Binarization(void);                            // Binarization
     void Binarization_view(void);                       // Binarization viewer
+    void Binarization2_view(void);                       // Binarization viewer
     void Full_Binarization(void);                            // Binarization
     void Full_Binarization_view(void);                       // Binarization viewer
    void Full_Raw_view(void);
@@ -82,10 +83,13 @@ public:
     uint8_t * save_buff_addr;
     
     uint8_t Raw_Y_component[320][240];      //Rawデータ
-    uint8_t Image_thinning_out[80][40]; 
+    uint8_t Image_thinning_out[80][40];
+    uint8_t Image_thinning_out2[80][20];
     uint8_t Image_binarization[80][40];
+    uint8_t Image_binarization2[80][10];
     uint8_t Full_binarization[320][240];
     uint8_t Max[40],Min[40],Ave[40];
+    uint8_t Max2[40],Min2[40],Ave2[40];
     uint8_t Full_Max[240],Full_Min[240],Full_Ave[240];
     uint8_t Width[40];                      //白線幅
     uint8_t Full_White[240],White[40];

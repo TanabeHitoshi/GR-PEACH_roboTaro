@@ -10,7 +10,6 @@
 //------------------------------------------------------------------//
 #include "mbed.h"
 //#include "SDFileSystem.h"
-
 #include "math.h"
 #include "iodefine.h"
 #include "DisplayBace.h"
@@ -40,9 +39,15 @@
 #define     STOP                0x03
 #define     ERROR               0xff
 
+<<<<<<< HEAD
 #define     SPEED               50
+=======
+#define     SPEED               70
+#define		MAX_MEMORY			10000
+>>>>>>> c6794e9ff39faea7d20cd252f05ced17c0d321ff
 #define     mem_count           6
 #define     MEMORY
+
 //Constructor
 //------------------------------------------------------------------//
 Ticker      interrput;
@@ -78,6 +83,8 @@ volatile unsigned long  cnt0;           /* Used by timer function   */
 volatile unsigned long  cnt1;           /* Used within main         */
 volatile int            pattern;        /* Pattern numbers          */
 volatile int            status_set;     /* Status                   */
+int						memory[MAX_MEMORY][5];
+int						m_number;
 
 /* Trace by image processing */
 
@@ -123,7 +130,7 @@ static volatile int32_t vfield_count;
 int main( void )
 {
     int i;
-    int lanePattern[4]= {-1,-1,-1,-1};    // 1 -> right  -1 -> left
+    int lanePattern[4]= {-1,1,-1,1};    // 1 -> right  -1 -> left
     int mem_pattern[mem_count];
     long mem_tripmeter[mem_count];
     int LR_Number = 0;
@@ -133,6 +140,7 @@ int main( void )
     long old_tripmeter;
     int mem;                               //記録回数
     int saka;
+
     /* NTSC-Video */
     DisplayBase::graphics_error_t error;
 
@@ -244,14 +252,18 @@ int main( void )
     pc.printf("Hello GR-OEACH\n\r");
 
     while(1) {
+    	if(pattern > 9 && pattern < 1000 && d.pushsw_get()) pattern = 1000;
         c.Capture();
+//        c.Binarization2_view();
 //        c.Binarization_view();
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
 //            pc.printf("c.isSideLine %d\r\n",c.isSideLine());
+//            pc.printf("c.isCrank %d\r\n",c.isCrank());
+//        pc.printf("pattern = %d\n\r",pattern);
             
         if(c.isCurve() == 1 ){
-            m.Max_Speed = 50;
+            m.Max_Speed = 45;
         }else{
  //       	if(c.isSideLine() == 0)
         		m.Max_Speed = SPEED;
@@ -270,6 +282,7 @@ int main( void )
                     m.Max_Speed = SPEED;
                     d.led_OUT(0x3);
                     cnt1 = 0;
+                    m_number = 0;
                     l = 0;
                     cntLED = 300;
                     pattern = 2;
@@ -295,7 +308,7 @@ int main( void )
                 }
             break;
             case 3: /* gate start */
-                if(c.BlackCount == 0 && !c.isCross())pattern = 11;
+                if(c.BlackCount == 0 && !c.isCross())pattern = 5;
                 if( d.pushsw_get()){
                     wait(1.5);
                     pattern = 10;
@@ -331,9 +344,9 @@ int main( void )
                 else d.led_OUT(0x1);
 #ifdef  MEMORY
                 /* クランク検知   */
-                if(c.aa > 0 || c.aa < -0){
+                if(c.aa > 2 || c.aa < -2){
                     clankLR = c.isHalf_Line();
-                    if(c.isHalf_Line() != 0){
+                    if(c.isCrank() != 0){
                         pattern = 30;
                         old_tripmeter = m.get_tripmeter();
      //                  pc.printf("clank tripmeter = %ld\n\r",old_tripmeter);
@@ -365,7 +378,7 @@ int main( void )
                 if(mem_tripmeter[mem] < m.get_tripmeter() && mem < mem_count)pattern = mem_pattern[mem];
 #endif
                 m.run( 100-c.Curve_value(), iServo );
-                m.handle( iServo );
+                m.handle( iServo - c.aa);
                 break;
             case 11:
             	d.led_OUT(0x0);
@@ -380,7 +393,7 @@ int main( void )
             //Left Clank
                 if(clankLR == -1) m.handle( -38 * HANDLE_STEP);
             //Right Clank
-                if(clankLR == 1) m.handle( 35 * HANDLE_STEP);
+                if(clankLR == 1) m.handle( 38 * HANDLE_STEP);
                 if(c.isBlack()){
                     pattern = 31;
                 }
@@ -390,13 +403,13 @@ int main( void )
             //Left Clank
                 if(clankLR == -1){
                     m.handle( -38 * HANDLE_STEP);
-                    m.motor(0,50,0);
+                    m.motor(-50,70,0);
                     if(c.isOut() == -1)pattern = 32;
                 }
             //Right Clank
                 if(clankLR == 1){
                     m.handle( 35 * HANDLE_STEP);
-                    m.motor(50,0,0);
+                    m.motor(70,-50,0);
                     if(c.isOut() == 1)pattern = 32;
                 }
                 break;
@@ -430,7 +443,6 @@ int main( void )
             break;
             case 51:
                 d.led_OUT(0x02);
-
  //               l++;
                 m.handle( 0 );
                 m.motor(-100,-100,0);
@@ -479,6 +491,7 @@ int main( void )
             case 54:
                 d.led_OUT( 0x1);
                 m.run( 50, iServo );
+                m.handle( iServo);
                 if(c.cc > -5 && c.cc < 5) {
                     pattern = 55;
                     cnt1 = 0;
@@ -488,9 +501,9 @@ int main( void )
                 d.led_OUT( 0x0);
  //               m.run( 100-c.Curve_value(), iServo );
                 if(c.isBlack() == 1) {
-                    m.motor(0,0,0);
+                    m.motor(30,30,0);
                 } else {
-                    m.run( 50, iServo );
+                    m.run( 70, iServo );
                     m.handle( iServo );
                 }
                 if( cnt1 > 1000 ){
@@ -541,6 +554,37 @@ int main( void )
                     m.motor(0,0,0);                    
                 }
                 break; 
+            case 1000: //ログの出力
+           		d.led_OUT( 0x0 );
+           		m.motor(0,0,0);
+           		m.handle( 0 );
+            	wait(2.0);
+          		d.led_OUT( 0x3 );
+            	wait(2.0);
+            	pattern = 1010;
+            	cntLED = 300;
+            break;
+            case 1010:
+                if( d.pushsw_get() ){
+                	pattern = 1020;
+                	m_number = 0;
+                }
+                if( cnt1 < cntLED ) {
+                    d.led_OUT( 0x1 );
+                } else if( cnt1 < cntLED*2 ) {
+                    d.led_OUT( 0x2 );
+                } else {
+                    cnt1 = 0;
+                }
+            break;
+            case 1020:
+            	pc.printf("%d,%4d,%4d,%4d,%4d,%4d\r\n",m_number,memory[m_number][0],memory[m_number][1],memory[m_number][2],memory[m_number][3],memory[m_number][4]);
+            	m_number++;
+            	if(m_number > MAX_MEMORY) pattern = 1030;
+            break;
+            case 1030:
+            	d.led_OUT(0x00);
+            break;
             default:
                 break;
         }
@@ -572,6 +616,15 @@ void intTimer( void )
 
             break;
         case 33:
+        	if(pattern > 9 && pattern < 1000){
+        		memory[m_number][0] = pattern;
+        		memory[m_number][1] = c.aa;
+        		memory[m_number][2] = c.cc;
+        		memory[m_number][3] = c.Center[19];
+        		memory[m_number][4] = iServo;
+        		m_number++;
+        		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;
+         	}
             counter = 0;
             break;
         default:
@@ -648,8 +701,10 @@ void led_status_set( int set )
 //------------------------------------------------------------------//
 void ServoControl_process( void )
 {
-    if(c.isCurve())   iServo = c.CurvePID();
-    else                iServo = c.StrightPID();
+	if(c.cc != -999){
+		if(c.isCurve())   iServo = c.CurvePID();
+		else                iServo = c.StrightPID();
+	}
 }
 
 // Standard deviation
