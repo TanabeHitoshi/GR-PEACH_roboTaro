@@ -39,12 +39,9 @@
 #define     STOP                0x03
 #define     ERROR               0xff
 
-<<<<<<< HEAD
-#define     SPEED               50
-=======
+
 #define     SPEED               70
 #define		MAX_MEMORY			10000
->>>>>>> c6794e9ff39faea7d20cd252f05ced17c0d321ff
 #define     mem_count           6
 #define     MEMORY
 
