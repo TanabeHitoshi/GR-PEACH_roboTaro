@@ -18,7 +18,8 @@ class isCamera : public Camera{
         int isHalf_Line(void);              // ハーフラインのチェック
         int isSideLine(void);               // side white line check
         int Curve_value(void);              //カーブの大きさを計算
-        int isBlack(void);                  // black check   
+        int isBlack(void);                  // black check
+        int isEndBlack(void);				// end black check
         int All_Black(void);                // All Black cheack
         int isSlop(void);                   // 坂 cheack     
         int isCurve(void);                  // Curve check

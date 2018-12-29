@@ -107,7 +107,25 @@ int isCamera::isSideLine(void)
 // 0 -> non black  1 -> black
 int isCamera::isBlack(void)
 {
-    if(BlackCount > 30)
+    if(BlackCount > 10)
+        return 1;
+    else
+        return 0;
+}
+//--------------------------------------------------------------------//
+//cheack EndBlack
+// 0 -> non black  1 -> black
+int isCamera::isEndBlack(void)
+{
+    int x;
+    int count_w;
+
+    count_w = 0;
+    for(x = 0;x < 80;x++){
+        if(Image_binarization[x][39] == 1)
+            count_w++;
+    }
+    if(count_w < 5)
         return 1;
     else
         return 0;
@@ -126,7 +144,7 @@ int isCamera::All_Black(void)
         if(Image_binarization[x][39] == 1)
             count_w++;
     }
-    if(count_w < 5)
+    if(count_w < 5 && BlackCount > 30)
         return 1;
     else
         return 0;
