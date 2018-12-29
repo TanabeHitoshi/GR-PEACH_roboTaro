@@ -550,7 +550,6 @@ int main( void )
                     m.motor(0,0,0);                    
                 }
                 break; 
-
             case 1000: //ログの出力
            		d.led_OUT( 0x0 );
            		m.motor(0,0,0);
