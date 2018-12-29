@@ -38,7 +38,7 @@ int isCamera::isCrank(void)
     int hl;
 
     hl = 0;
-    if(BlackCount > 4){
+    if(BlackCount > 3){
     	hl = isHalf_Line();
     }
     return hl;
@@ -70,29 +70,35 @@ int isCamera::isHalf_Line(void)
 // 0-> non  1-> right   -1-> left
 int isCamera::isSideLine(void)
 {
-    int cnt;
+    int y,cnt;
     int center_X = 40;
-    int L,R;
-    int sideWide;
+    int L[10],R[10];
+    int sideWide[10];
+    int L_side,R_side;
 
-    LR = 0;
+    LR = 0;L_side = 0;R_side = 0;
   //  if(aa > 3 && aa < -3){
-    	R = 0; L = 0;
+    for(y = 0; y < 10; y++){
+    	R[y] = 0; L[y] = 0;
 		for(cnt = 10; cnt < 40; cnt++){
-			 if(R == 0){
-				if(Image_binarization2[center_X + cnt][0] == 1)R = cnt;     //右に発見
+			 if(R[y] == 0){
+				if(Image_binarization2[center_X + cnt][y] == 1)R[y] = cnt;     //右に発見
 			 }
-			 if(L == 0){
-				if(Image_binarization2[center_X - cnt][0] == 1)L = cnt;      //左に発見
+			 if(L[y] == 0){
+				if(Image_binarization2[center_X - cnt][y] == 1)L[y] = cnt;      //左に発見
 			 }
 		}
 
-		sideWide = R - L;
-	   printf("L = %d    R = %d  R-L %d\r\n\r\n",L,R,R-L);
-		if(sideWide > 30 )LR = -1;
-		else if(sideWide < -30 )LR = 1;
-		else LR = 0;
+		sideWide[y] = L[y] - R[y];
+		if(sideWide[y] > 25 )L_side++;
+		if(sideWide[y] < -25 )R_side++;
+		if(R_side > 3)LR = -1;
+		if(L_side > 3)LR = 1;
+//		printf("%d L = %d    R = %d  R-L %d\r\n",y,L[y],R[y],sideWide[y]);
+
+    }
 //    }
+//    printf("L_side = %d R_side = %d \r\n",L_side,R_side);
     return LR;
 }
 //--------------------------------------------------------------------//

@@ -39,7 +39,7 @@
 #define     STOP                0x03
 #define     ERROR               0xff
 
-#define     SPEED               45
+#define     SPEED               70
 #define		MAX_MEMORY			10000
 #define     mem_count           6
 #define     MEMORY
@@ -248,13 +248,14 @@ int main( void )
     pc.printf("Hello GR-OEACH\n\r");
 
     while(1) {
-    	if(pattern > 10 && pattern < 1000 && d.pushsw_get()) pattern = 1000;
+    	if(pattern > 9 && pattern < 1000 && d.pushsw_get()) pattern = 1000;
         c.Capture();
-        c.Binarization2_view();
+//        c.Binarization2_view();
 //        c.Binarization_view();
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
-            pc.printf("c.isSideLine %d\r\n",c.isSideLine());
+//            pc.printf("c.isSideLine %d\r\n",c.isSideLine());
+//            pc.printf("c.isCrank %d\r\n",c.isCrank());
 //        pc.printf("pattern = %d\n\r",pattern);
             
         if(c.isCurve() == 1 ){
@@ -551,8 +552,11 @@ int main( void )
                 break; 
 
             case 1000: //ログの出力
-            	m.motor(0,0,0);
-            	m.handle( 0 );
+           		d.led_OUT( 0x0 );
+           		m.motor(0,0,0);
+           		m.handle( 0 );
+            	wait(2.0);
+          		d.led_OUT( 0x3 );
             	wait(2.0);
             	pattern = 1010;
             	cntLED = 300;
