@@ -39,8 +39,7 @@
 #define     STOP                0x03
 #define     ERROR               0xff
 
-
-#define     SPEED               70
+#define     SPEED               80
 #define		MAX_MEMORY			10000
 #define     mem_count           6
 #define     MEMORY
@@ -137,6 +136,7 @@ int main( void )
     long old_tripmeter;
     int mem;                               //記録回数
     int saka;
+    int SideLine;
 
     /* NTSC-Video */
     DisplayBase::graphics_error_t error;
@@ -256,16 +256,23 @@ int main( void )
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
 //            pc.printf("c.isSideLine %d\r\n",c.isSideLine());
-//            pc.printf("c.isCrank %d\r\n",c.isCrank());
+//            pc.printf("c.isCrank %d  c.isCross %d  c.isBlack %d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
 //        pc.printf("pattern = %d\n\r",pattern);
             
         if(c.isCurve() == 1 ){
-            m.Max_Speed = 45;
+            m.Max_Speed = 60;
         }else{
- //       	if(c.isSideLine() == 0)
+        	SideLine = c.isSideLine();
+        	if(SideLine == -1){	//left
+        		m.Max_Speed = 50;
+        		c.offset_Center = -20;
+        	}else if(SideLine == 1){ //Right
+        		m.Max_Speed = 50;
+        		c.offset_Center = 20;
+        	}else{
         		m.Max_Speed = SPEED;
-//        	else
-//        		m.Max_Speed = 0;
+        		c.offset_Center = 0;
+        	}
         }
  //       sideLR = c.isSideLine();
 
@@ -341,7 +348,7 @@ int main( void )
                 else d.led_OUT(0x1);
 #ifdef  MEMORY
                 /* クランク検知   */
-                if(c.aa > 2 || c.aa < -2){
+//                if(c.aa < 5 && c.aa > -5){
                     clankLR = c.isHalf_Line();
                     if(c.isCrank() != 0){
                         pattern = 30;
@@ -351,21 +358,14 @@ int main( void )
                         cnt1 = 0;
                     }
                     /* レーンチェンジ検知    */
-                    if(c.isBlack() == 1 ){
+                    if(c.All_Black() == 1 ){
                         pattern = 51;     //Lean change
                         LR = lanePattern[LR_Number];
                         old_tripmeter = m.get_tripmeter();
     //                    pc.printf("line chang tripmeter = %ld\n\r",old_tripmeter);
     //                    fprintf(fp,"%d,%ld\n\r",pattern+10,old_tripmeter);
                     }
-                }
-                /* 坂道検知 */
-//                if(c.isSlop() == UPDOWN){
-//                    m.reset_tripmeter();
-//                    if( saka == 0 ) pattern = 70;   /* 上り坂  */
- //                   else pattern = 71;                  /* 下り坂  */
-//                    saka++;
-//                }
+  //              }
                 if(mem == mem_count){
  //                   fprintf(fp,"END\n\r\n\r");
  //                   fclose(fp);
@@ -374,14 +374,42 @@ int main( void )
 #else
                 if(mem_tripmeter[mem] < m.get_tripmeter() && mem < mem_count)pattern = mem_pattern[mem];
 #endif
+                if(c.isHalf_Line() == 0){	//クランクで大曲と間違えないように
+                	if(c.Center[19] > 30) pattern = 12;
+                	if(c.Center[19] < -30) pattern = 13;
+                }
                 m.run( 100-c.Curve_value(), iServo );
-                m.handle( iServo - c.aa);
+                m.handle( iServo );
                 break;
             case 11:
             	d.led_OUT(0x0);
                 m.run( 100, iServo );
                 m.handle( iServo );
             	break;
+// Large curve
+            case 12:
+            	if(c.Center[19] > 25){
+                    m.run( 100, 25 * HANDLE_STEP );
+                    m.handle( 25 * HANDLE_STEP );
+            	}
+            	if(c.Center[19] < 0){
+                    m.run( 100, 30 * HANDLE_STEP );
+                    m.handle( 30 * HANDLE_STEP );
+            	}
+            	if(c.Center[19] < 25 && c.Center[19] > 0) pattern = 10;
+            break;
+            case 13:
+            	if(c.Center[19] < -25){
+                    m.run( 100, -25 * HANDLE_STEP );
+                    m.handle( -25 * HANDLE_STEP );
+            	}
+            	if(c.Center[19] > 0){
+                    m.run( 100, -30 * HANDLE_STEP );
+                    m.handle( -30 * HANDLE_STEP );
+            	}
+
+            	if(c.Center[19] > -25 && c.Center[19] < 0) pattern = 10;
+            break;
 // clank
             case 30:    // Brak;
                 d.led_OUT( 0x2);
@@ -391,7 +419,7 @@ int main( void )
                 if(clankLR == -1) m.handle( -38 * HANDLE_STEP);
             //Right Clank
                 if(clankLR == 1) m.handle( 38 * HANDLE_STEP);
-                if(c.isBlack()){
+                if(c.isEndBlack()){
                     pattern = 31;
                 }
                 break;
@@ -400,13 +428,13 @@ int main( void )
             //Left Clank
                 if(clankLR == -1){
                     m.handle( -38 * HANDLE_STEP);
-                    m.motor(-50,70,0);
+                    m.motor(-20,70,0);
                     if(c.isOut() == -1)pattern = 32;
                 }
             //Right Clank
                 if(clankLR == 1){
                     m.handle( 35 * HANDLE_STEP);
-                    m.motor(70,-50,0);
+                    m.motor(70,-20,0);
                     if(c.isOut() == 1)pattern = 32;
                 }
                 break;
@@ -618,7 +646,7 @@ void intTimer( void )
         		memory[m_number][1] = c.aa;
         		memory[m_number][2] = c.cc;
         		memory[m_number][3] = c.Center[19];
-        		memory[m_number][4] = iServo;
+        		memory[m_number][4] = c.isSideLine();
         		m_number++;
         		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;
          	}
