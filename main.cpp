@@ -259,7 +259,7 @@ int main( void )
 //        pc.printf("pattern = %d\n\r",pattern);
             
         if(c.isCurve() == 1 ){
-            m.Max_Speed = 45;
+            m.Max_Speed = 60;
         }else{
  //       	if(c.isSideLine() == 0)
         		m.Max_Speed = SPEED;
@@ -373,14 +373,40 @@ int main( void )
 #else
                 if(mem_tripmeter[mem] < m.get_tripmeter() && mem < mem_count)pattern = mem_pattern[mem];
 #endif
+                if(c.Center[19] > 30) pattern = 12;
+                if(c.Center[19] < -30) pattern = 13;
                 m.run( 100-c.Curve_value(), iServo );
-                m.handle( iServo - c.aa);
+                m.handle( iServo );
                 break;
             case 11:
             	d.led_OUT(0x0);
                 m.run( 100, iServo );
                 m.handle( iServo );
             	break;
+// Large curve
+            case 12:
+            	if(c.Center[19] > 25){
+                    m.run( 100, 25 * HANDLE_STEP );
+                    m.handle( 25 * HANDLE_STEP );
+            	}
+            	if(c.Center[19] < 0){
+                    m.run( 100, 30 * HANDLE_STEP );
+                    m.handle( 30 * HANDLE_STEP );
+            	}
+            	if(c.Center[19] < 25 && c.Center[19] > 0) pattern = 10;
+            break;
+            case 13:
+            	if(c.Center[19] < -25){
+                    m.run( 100, -25 * HANDLE_STEP );
+                    m.handle( -25 * HANDLE_STEP );
+            	}
+            	if(c.Center[19] > 0){
+                    m.run( 100, -30 * HANDLE_STEP );
+                    m.handle( -30 * HANDLE_STEP );
+            	}
+
+            	if(c.Center[19] > -25 && c.Center[19] < 0) pattern = 10;
+            break;
 // clank
             case 30:    // Brak;
                 d.led_OUT( 0x2);
