@@ -340,7 +340,7 @@ int main( void )
                 else d.led_OUT(0x1);
 #ifdef  MEMORY
                 /* クランク検知   */
-                if(c.aa > 2 || c.aa < -2){
+                if(c.aa < 5 && c.aa > -5){
                     clankLR = c.isHalf_Line();
                     if(c.isCrank() != 0){
                         pattern = 30;

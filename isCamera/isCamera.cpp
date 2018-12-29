@@ -107,7 +107,7 @@ int isCamera::isSideLine(void)
 // 0 -> non black  1 -> black
 int isCamera::isBlack(void)
 {
-    if(BlackCount > 10)
+    if(BlackCount > 30)
         return 1;
     else
         return 0;
