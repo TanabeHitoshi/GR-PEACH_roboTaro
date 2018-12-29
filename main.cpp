@@ -131,7 +131,7 @@ int main( void )
     long mem_tripmeter[mem_count];
     int LR_Number = 0;
     int l;
-    long cntLED;
+    unsigned long cntLED;
     int LR,sideLR,clankLR;
     long old_tripmeter;
     int mem;                               //記録回数
@@ -346,7 +346,6 @@ int main( void )
             case 10:    // Normal trace
                 if(m.Max_Speed == SPEED) d.led_OUT( 0x3 );
                 else d.led_OUT(0x1);
-#ifdef  MEMORY
                 /* クランク検知   */
 //                if(c.aa < 5 && c.aa > -5){
                     clankLR = c.isHalf_Line();
@@ -371,9 +370,6 @@ int main( void )
  //                   fclose(fp);
                     mem++;
                 }                
-#else
-                if(mem_tripmeter[mem] < m.get_tripmeter() && mem < mem_count)pattern = mem_pattern[mem];
-#endif
                 if(c.isHalf_Line() == 0){	//クランクで大曲と間違えないように
                 	if(c.Center[19] > 30) pattern = 12;
                 	if(c.Center[19] < -30) pattern = 13;
@@ -634,11 +630,6 @@ void intTimer( void )
         case 12:
             retDevi_A = Standard_Deviation( TempBinary_A, TempDevi_A, 15 );
             ServoControl_process();
-            /*  if(pattern == 11){
-                  data[cnt_d] = iServo;
-                  cnt_d++;
-              }::*/
-
             break;
         case 33:
         	if(pattern > 9 && pattern < 1000){

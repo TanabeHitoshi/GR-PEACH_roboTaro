@@ -125,7 +125,6 @@ void Drive::init_MTU2_PWM_Motor( void )
 //------------------------------------------------------------------//
 void Drive::handle( int angle )
 {
-//    angle += 4;
     handle_buff = angle;
     /* When the servo move from left to right in reverse, replace "-" with "+" */
  //   MTU2TGRD_0 = SERVO_CENTER - angle * HANDLE_STEP;
