@@ -39,7 +39,7 @@
 #define     STOP                0x03
 #define     ERROR               0xff
 
-#define     SPEED               60
+#define     SPEED               50
 #define		MAX_MEMORY			10000
 #define     mem_count           6
 #define     MEMORY
@@ -418,6 +418,24 @@ int main( void )
                     pattern = 31;
                 }
                 break;
+            case 310:
+                m.motor(-50,-50,0);
+                if(!c.isCrank()){
+                    pattern = 320;
+                }
+                break;
+            case 320:    // Brak;
+                d.led_OUT( 0x2);
+                m.motor(30,30,0);
+                c.offset_Center = 0;
+            //Left Clank
+                if(clankLR == -1) m.handle( -38 * HANDLE_STEP);
+            //Right Clank
+                if(clankLR == 1) m.handle( 38 * HANDLE_STEP);
+                if(!c.isEndBlack()){
+                    pattern = 31;
+                }
+                break;
             case 31:    // turn 90
                 d.led_OUT( 0x1);
             //Left Clank
@@ -640,7 +658,7 @@ void intTimer( void )
         		memory[m_number][1] = c.aa;
         		memory[m_number][2] = c.cc;
         		memory[m_number][3] = c.Center[19];
-        		memory[m_number][4] = c.isSideLine();
+        		memory[m_number][4] = c.isHalf_Line();
         		m_number++;
         		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;
          	}

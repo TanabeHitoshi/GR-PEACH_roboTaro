@@ -7,7 +7,7 @@
 #include "DisplayBace.h" 
 #include "Camera.h"
 
-#define     CV 10
+#define     CV 5
 
 class isCamera : public Camera{
     public:
