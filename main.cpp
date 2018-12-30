@@ -39,7 +39,7 @@
 #define     STOP                0x03
 #define     ERROR               0xff
 
-#define     SPEED               50
+#define     SPEED               55
 #define		MAX_MEMORY			10000
 #define     mem_count           6
 #define     MEMORY
@@ -259,21 +259,7 @@ int main( void )
 //            pc.printf("c.isCrank %d  c.isCross %d  c.isBlack %d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
 //        pc.printf("pattern = %d\n\r",pattern);
             
-        if(c.isCurve() == 1 ){
-            m.Max_Speed = 50;
-        }else{
-        	SideLine = c.isSideLine();
-        	if(SideLine == -1){	//left
-        		m.Max_Speed = 50;
-        		c.offset_Center = -20;
-        	}else if(SideLine == 1){ //Right
-        		m.Max_Speed = 50;
-        		c.offset_Center = 20;
-        	}else{
-        		m.Max_Speed = SPEED;
-        		c.offset_Center = 0;
-        	}
-        }
+
  //       sideLR = c.isSideLine();
 
         switch( pattern ) {
@@ -345,7 +331,22 @@ int main( void )
                 break;
 // Trace
             case 10:    // Normal trace
-                /* クランク検知   */
+            	if(c.isCurve() == 1 ){
+                    m.Max_Speed = 50;
+                }else{
+                	SideLine = c.isSideLine();
+                	if(SideLine == -1){	//left
+                		m.Max_Speed = 20;
+                		c.offset_Center = -20;
+                	}else if(SideLine == 1){ //Right
+                		m.Max_Speed = 20;
+                		c.offset_Center = 20;
+                	}else{
+                		m.Max_Speed = SPEED;
+                		c.offset_Center = 0;
+                	}
+                }
+            	/* クランク検知   */
                 if(c.aa != -999){
                     clankLR = c.isHalf_Line();
                     if(c.isCrank() != 0){
@@ -411,27 +412,27 @@ int main( void )
                 m.motor(-100,-100,0);
                 c.offset_Center = 0;
             //Left Clank
-                if(clankLR == -1) m.handle( -38 * HANDLE_STEP);
+                if(clankLR == -1) m.handle( -40 * HANDLE_STEP);
             //Right Clank
-                if(clankLR == 1) m.handle( 38 * HANDLE_STEP);
+                if(clankLR == 1) m.handle( 40 * HANDLE_STEP);
                 if(!c.isEndBlack()){
                     pattern = 31;
                 }
                 break;
             case 310:
-                m.motor(-50,-50,0);
-                if(!c.isCrank()){
+                m.motor(-40,-40,0);
+                if(!c.isSideLine()){
                     pattern = 320;
                 }
                 break;
             case 320:    // Brak;
                 d.led_OUT( 0x2);
-                m.motor(30,30,0);
+                m.motor(50,50,0);
                 c.offset_Center = 0;
             //Left Clank
-                if(clankLR == -1) m.handle( -38 * HANDLE_STEP);
+                if(clankLR == -1) m.handle( -40 * HANDLE_STEP);
             //Right Clank
-                if(clankLR == 1) m.handle( 38 * HANDLE_STEP);
+                if(clankLR == 1) m.handle( 40 * HANDLE_STEP);
                 if(!c.isEndBlack()){
                     pattern = 31;
                 }
@@ -440,14 +441,14 @@ int main( void )
                 d.led_OUT( 0x1);
             //Left Clank
                 if(clankLR == -1){
-                    m.handle( -38 * HANDLE_STEP);
-                    m.motor(-20,70,0);
+                    m.handle( -40 * HANDLE_STEP);
+                    m.motor(0,50,0);
                     if(c.isOut() == -1)pattern = 32;
                 }
             //Right Clank
                 if(clankLR == 1){
-                    m.handle( 35 * HANDLE_STEP);
-                    m.motor(70,-20,0);
+                    m.handle( 40 * HANDLE_STEP);
+                    m.motor(50,0,0);
                     if(c.isOut() == 1)pattern = 32;
                 }
                 break;
@@ -468,6 +469,11 @@ int main( void )
                      pattern = 10;
                 }
                 break;
+            case 34:
+            	m.run( 100, iServo );
+                m.handle( iServo );
+                if(c.cc > -5 && c.cc < 5)pattern = 10;
+            	break;
 //Lane change
             case 50:
                 d.led_OUT( 0x1);
