@@ -39,7 +39,7 @@
 #define     STOP                0x03
 #define     ERROR               0xff
 
-#define     SPEED               80
+#define     SPEED               60
 #define		MAX_MEMORY			10000
 #define     mem_count           6
 #define     MEMORY
@@ -260,7 +260,7 @@ int main( void )
 //        pc.printf("pattern = %d\n\r",pattern);
             
         if(c.isCurve() == 1 ){
-            m.Max_Speed = 60;
+            m.Max_Speed = 50;
         }else{
         	SideLine = c.isSideLine();
         	if(SideLine == -1){	//left
@@ -343,11 +343,10 @@ int main( void )
                 m.motor(70,70,0);
 //                m.handle( iServo );
                 break;
+// Trace
             case 10:    // Normal trace
-                if(m.Max_Speed == SPEED) d.led_OUT( 0x3 );
-                else d.led_OUT(0x1);
                 /* クランク検知   */
-//                if(c.aa < 5 && c.aa > -5){
+                if(c.aa != -999){
                     clankLR = c.isHalf_Line();
                     if(c.isCrank() != 0){
                         pattern = 30;
@@ -364,7 +363,7 @@ int main( void )
     //                    pc.printf("line chang tripmeter = %ld\n\r",old_tripmeter);
     //                    fprintf(fp,"%d,%ld\n\r",pattern+10,old_tripmeter);
                     }
-  //              }
+                }
                 if(mem == mem_count){
  //                   fprintf(fp,"END\n\r\n\r");
  //                   fclose(fp);
@@ -415,7 +414,7 @@ int main( void )
                 if(clankLR == -1) m.handle( -38 * HANDLE_STEP);
             //Right Clank
                 if(clankLR == 1) m.handle( 38 * HANDLE_STEP);
-                if(c.isEndBlack()){
+                if(!c.isEndBlack()){
                     pattern = 31;
                 }
                 break;
@@ -436,7 +435,7 @@ int main( void )
                 break;
             case 32:  
                 d.led_OUT( 0x0);
-                if(c.cc > -10 && c.cc < 10){
+                if(c.cc > -5 && c.cc < 5){
                      m.motor(30,30,0);
                      pattern = 33;
                 }
@@ -567,6 +566,10 @@ int main( void )
                 led_status_set( ERROR );
                 m.motor( 0, 0 ,0);
                 break;
+            case 100:
+            	m.motor(0,0,0);
+            	m.handle( 0 );
+            break;
             case 200://1mの走行テストモード
                 d.led_OUT( 0x0 );
                 m.motor(50,50,0);

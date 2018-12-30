@@ -234,8 +234,8 @@ int isCamera::isCurve(void)
 // 0-> non  1-> right   -1-> left
 int isCamera::isOut(void)
 {
-    if(Image_binarization[2][5]) return -1;
-    else if(Image_binarization[37][5]) return 1;
+    if(Image_binarization[5][5]) return -1;
+    else if(Image_binarization[34][5]) return 1;
     else return 0;
 }
 
