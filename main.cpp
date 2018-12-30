@@ -251,11 +251,11 @@ int main( void )
     while(1) {
     	if(pattern > 9 && pattern < 1000 && d.pushsw_get()) pattern = 1000;
         c.Capture();
-//        c.Binarization2_view();
+        c.Binarization2_view();
 //        c.Binarization_view();
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
-//            pc.printf("c.isSideLine %d\r\n",c.isSideLine());
+            pc.printf("isSideLine %d　　isCrank_F %d\r\n",c.isSideLine(),c.isCrank_F());
 //            pc.printf("c.isCrank %d  c.isCross %d  c.isBlack %d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
 //        pc.printf("pattern = %d\n\r",pattern);
             
