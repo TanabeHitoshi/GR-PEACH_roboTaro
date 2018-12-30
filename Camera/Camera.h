@@ -84,15 +84,15 @@ public:
     
     uint8_t Raw_Y_component[320][240];      //Rawデータ
     uint8_t Image_thinning_out[80][40];
-    uint8_t Image_thinning_out2[80][20];
+    uint8_t Image_thinning_out2[80][10];
     uint8_t Image_binarization[80][40];
     uint8_t Image_binarization2[80][10];
     uint8_t Full_binarization[320][240];
     uint8_t Max[40],Min[40],Ave[40];
-    uint8_t Max2[40],Min2[40],Ave2[40];
+    uint8_t Max2[10],Min2[10],Ave2[10];
     uint8_t Full_Max[240],Full_Min[240],Full_Ave[240];
     uint8_t Width[40];                      //白線幅
-    uint8_t Full_White[240],White[40];
+    uint8_t Full_White[240],White[40],White2[10];
     int Center[40];
     int aa;                                 //slope
     int bb;                                 //intercept
