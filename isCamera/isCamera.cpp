@@ -31,6 +31,25 @@ int isCamera::isCross(void)
     else return 0;
 }
 //--------------------------------------------------------------------//
+
+//cheack Crank
+// 0-> non  1-> right crank  -1-> left crank
+int isCamera::isCrank_F(void)
+{
+    int y;
+    int count;
+
+    count = 0;
+    for(y=0; y < 10; y++) {
+        if(Width2[y] > (40 + y)) {
+        	count++;
+        }
+    }
+    if(count > 1)return 1;
+    else return 0;
+}
+//--------------------------------------------------------------------//
+
 //cheack Crank
 // 0-> non  1-> right crank  -1-> left crank
 int isCamera::isCrank(void)

@@ -126,7 +126,7 @@ void Camera::Binarization(void)
     int x;
     int y;
 
-     for(y = 0; y < 20; y++) {
+     for(y = 0; y < 10; y++) {
         //Determine the threshold
         Ave2[y] = (Max2[y] + Min2[y]) * 3 / 5;
         // number of White  to zero
@@ -136,7 +136,7 @@ void Camera::Binarization(void)
             if(Min2[y] > 200) {
                 for(x = 0; x < 10; x++) {
                     Image_binarization2[x][y] = 1;
-//                    White[y]++;
+                    White2[y]++;
                 }
             } else {
                 for(x = 0; x < 80; x++) {
@@ -225,7 +225,7 @@ void Camera::Binarization2_view(void)
             else
                 p.printf(" ");
         }
-        p.printf( "Max%3d Min%3d Ave%3d Width%3d Center%3d  White%3d\n\r",Max[y],Min[y],Ave[y],Width[y],Center[y],White[y]);
+        p.printf( "Max%3d Min%3d Ave%3d White%3d\n\r",Max2[y],Min2[y],Ave2[y],White2[y]);
     }
 }
 //------------------------------------------------------------------//

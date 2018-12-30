@@ -415,6 +415,7 @@ int main( void )
                 if(clankLR == -1) m.handle( -40 * HANDLE_STEP);
             //Right Clank
                 if(clankLR == 1) m.handle( 40 * HANDLE_STEP);
+
                 if(!c.isEndBlack()){
                     pattern = 31;
                 }

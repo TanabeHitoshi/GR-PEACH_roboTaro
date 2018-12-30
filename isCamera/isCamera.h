@@ -14,6 +14,7 @@ class isCamera : public Camera{
 //        isCamera( void );                    //コンストラクタ
         void Capture(void);                 // カメラの撮影
         int isCross(void);                  // クロスラインのチェック
+        int isCrank_F(void);				// クランクの前チェック
         int isCrank(void);					// クランクのチェック
         int isHalf_Line(void);              // ハーフラインのチェック
         int isSideLine(void);               // side white line check
