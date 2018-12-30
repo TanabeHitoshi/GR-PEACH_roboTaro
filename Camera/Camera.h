@@ -57,7 +57,7 @@ public:
     void Binarization2_view(void);                       // Binarization viewer
     void Full_Binarization(void);                            // Binarization
     void Full_Binarization_view(void);                       // Binarization viewer
-   void Full_Raw_view(void);
+    void Full_Raw_view(void);
     void WhiteLineWideCenter(void);                           //Meauser the width of the line
     
     void LeastSquare(void);                             //Least square method control 

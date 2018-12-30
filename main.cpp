@@ -94,11 +94,6 @@ volatile int            data[150];
 volatile int            flag;
 volatile int            cnt_d;
 
-/* Mark detection */
-//unsigned char   ImageData[320*240];
-//unsigned char   ImageComp[160*120];
-//unsigned char   ImageBinary[160*120];
-
 double          TempDevi_A[15];
 unsigned char   TempBinary_A[15] = {0,1,1,1,0,
                                     0,0,1,0,0,
@@ -125,17 +120,17 @@ static volatile int32_t vfield_count;
 //------------------------------------------------------------------//
 int main( void )
 {
-    int i;
+//    int i;
     int lanePattern[4]= {-1,1,-1,1};    // 1 -> right  -1 -> left
     int mem_pattern[mem_count];
     long mem_tripmeter[mem_count];
     int LR_Number = 0;
-    int l;
+//    int l;
     unsigned long cntLED;
     int LR,sideLR,clankLR;
     long old_tripmeter;
     int mem;                               //記録回数
-    int saka;
+//    int saka;
     int SideLine;
 
     /* NTSC-Video */
@@ -225,7 +220,7 @@ int main( void )
     cnt1 = 0;
 //    t = 0;
     flag = 0;
-    saka = 0;
+//    saka = 0;
 #ifdef  MEMORY
         pc.printf("Cource memory\n\r");
         FILE *fp= fopen("/sd/course.txt","a");
@@ -251,11 +246,11 @@ int main( void )
     while(1) {
     	if(pattern > 9 && pattern < 1000 && d.pushsw_get()) pattern = 1000;
         c.Capture();
-        c.Binarization2_view();
+//        c.Binarization2_view();
 //        c.Binarization_view();
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
-            pc.printf("isSideLine %d　　isCrank_F %d\r\n",c.isSideLine(),c.isCrank_F());
+//            pc.printf("isSideLine %d　　isCrank_F %d\r\n",c.isSideLine(),c.isCrank_F());
 //            pc.printf("c.isCrank %d  c.isCross %d  c.isBlack %d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
 //        pc.printf("pattern = %d\n\r",pattern);
             
@@ -273,7 +268,7 @@ int main( void )
                     d.led_OUT(0x3);
                     cnt1 = 0;
                     m_number = 0;
-                    l = 0;
+//                    l = 0;
                     cntLED = 300;
                     pattern = 2;
                     wait(2.0);
@@ -482,10 +477,6 @@ int main( void )
                 m.motor(30,30,0);
                 m.handle( iServo );               
                 break;
-            case 500:
-                m.motor(0,0,0);
-                printf("LR %d\n\r",LR);
-            break;
             case 51:
                 d.led_OUT(0x02);
  //               l++;
