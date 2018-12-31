@@ -77,6 +77,7 @@ double Standard_Deviation( unsigned char *data, double *Devi, int items );
 //------------------------------------------------------------------//
 volatile unsigned long  cnt0;           /* Used by timer function   */
 volatile unsigned long  cnt1;           /* Used within main         */
+volatile unsigned long  cntCrank;       /* Used Crank check         */
 volatile int            pattern;        /* Pattern numbers          */
 volatile int            status_set;     /* Status                   */
 int						memory[MAX_MEMORY][5];
@@ -309,6 +310,7 @@ int main( void )
             case 5:
                 if(!c.isCross()){
                     pattern = 10;
+                    cntCrank = 0;
                     wait(1.0);
                 }
                 if( cnt1 < cntLED ){
@@ -333,16 +335,22 @@ int main( void )
                 	if(SideLine == -1){	//left
                 		m.Max_Speed = 20;
                 		c.offset_Center = -20;
+                		cntCrank = 0;
                 	}else if(SideLine == 1){ //Right
                 		m.Max_Speed = 20;
                 		c.offset_Center = 20;
+                		cntCrank = 0;
                 	}else{
                 		m.Max_Speed = SPEED;
                 		c.offset_Center = 0;
                 	}
                 }
-            	/* クランク検知   */
                 if(c.aa != -999){
+            	/* クランク検知   */
+                	if(c.isCrank_F() == 1 && cntCrank < 500){
+                		m.Max_Speed = 0;
+                		pattern = 300;
+                	}
                     clankLR = c.isHalf_Line();
                     if(c.isCrank() != 0){
                         pattern = 30;
@@ -402,6 +410,18 @@ int main( void )
             	if(c.Center[19] > -25 && c.Center[19] < 0) pattern = 10;
             break;
 // clank
+            case 300:
+            	m.motor(0,0,0);
+                m.handle( iServo );
+                clankLR = c.isHalf_Line();
+                if(c.isCrank() != 0){
+                    pattern = 30;
+                    old_tripmeter = m.get_tripmeter();
+ //                  pc.printf("clank tripmeter = %ld\n\r",old_tripmeter);
+ //                   fprintf(fp,"%d,%ld\n\r",pattern+10,old_tripmeter);
+                    cnt1 = 0;
+                }
+            	break;
             case 30:    // Brak;
                 d.led_OUT( 0x2);
                 m.motor(-100,-100,0);
@@ -639,6 +659,7 @@ void intTimer( void )
 
     cnt0++;
     cnt1++;
+    cntCrank++;
 
     /* Trace by image processing */
 
