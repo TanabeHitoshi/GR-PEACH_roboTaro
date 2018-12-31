@@ -93,7 +93,7 @@ void Camera::image_thinning_out(void)
         Max2[y] = 0;
         Min2[y] = 255;
     }
-    for(y = 0; y < 20; y++) {
+    for(y = 0; y < 10; y++) {
         for(x = 0; x < 80; x++) {
             Image_thinning_out2[x][y] = Raw_Y_component[x*4+0][y*2+10];
             if(Image_thinning_out2[x][y] > Max2[y]) Max2[y] = Image_thinning_out2[x][y];
@@ -130,11 +130,11 @@ void Camera::Binarization(void)
         //Determine the threshold
         Ave2[y] = (Max2[y] + Min2[y]) * 3 / 5;
         // number of White  to zero
-//        White[y] = 0;
+        White2[y] = 0;
         if(Max2[y] > 200) {
             //When white is a straight line
             if(Min2[y] > 200) {
-                for(x = 0; x < 10; x++) {
+                for(x = 0; x < 80; x++) {
                     Image_binarization2[x][y] = 1;
                     White2[y]++;
                 }
@@ -142,7 +142,7 @@ void Camera::Binarization(void)
                 for(x = 0; x < 80; x++) {
                     if( Image_thinning_out2[x][y] >  Ave2[y]) {
                         Image_binarization2[x][y] = 1;   //white
-//                        White[y]++;
+                        White2[y]++;
                     } else {
                         Image_binarization2[x][y] = 0;   //black
                     }

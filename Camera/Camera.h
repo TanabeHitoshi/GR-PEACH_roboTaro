@@ -84,7 +84,7 @@ public:
     
     uint8_t Raw_Y_component[320][240];      //Rawデータ
     uint8_t Image_thinning_out[80][40];
-    uint8_t Image_thinning_out2[80][20];
+    uint8_t Image_thinning_out2[80][10];
     uint8_t Image_binarization[80][40];
     uint8_t Image_binarization2[80][10];
     uint8_t Full_binarization[320][240];

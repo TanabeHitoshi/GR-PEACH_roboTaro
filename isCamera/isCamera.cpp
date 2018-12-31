@@ -41,7 +41,7 @@ int isCamera::isCrank_F(void)
 
     count = 0;
     for(y=0; y < 10; y++) {
-        if(White[y] > (40 + y)) {
+        if(White2[y] > (40 + y)) {
         	count++;
         }
     }

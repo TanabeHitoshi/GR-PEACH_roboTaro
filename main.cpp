@@ -39,7 +39,7 @@
 #define     STOP                0x03
 #define     ERROR               0xff
 
-#define     SPEED               55
+#define     SPEED               70
 #define		MAX_MEMORY			10000
 #define     mem_count           6
 #define     MEMORY
@@ -247,11 +247,11 @@ int main( void )
     while(1) {
     	if(pattern > 9 && pattern < 1000 && d.pushsw_get()) pattern = 1000;
         c.Capture();
-//        c.Binarization2_view();
+ //       c.Binarization2_view();
 //        c.Binarization_view();
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
-//            pc.printf("isSideLine %d　　isCrank_F %d\r\n",c.isSideLine(),c.isCrank_F());
+//            pc.printf("isSideLine %2d　　isCrank_F %2d\r\n",c.isSideLine(),c.isCrank_F());
 //            pc.printf("c.isCrank %d  c.isCross %d  c.isBlack %d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
 //        pc.printf("pattern = %d\n\r",pattern);
             
@@ -333,11 +333,11 @@ int main( void )
                 }else{
                 	SideLine = c.isSideLine();
                 	if(SideLine == -1){	//left
-                		m.Max_Speed = 20;
+                		m.Max_Speed = 50;
                 		c.offset_Center = -20;
                 		cntCrank = 0;
                 	}else if(SideLine == 1){ //Right
-                		m.Max_Speed = 20;
+                		m.Max_Speed = 50;
                 		c.offset_Center = 20;
                 		cntCrank = 0;
                 	}else{
@@ -345,10 +345,11 @@ int main( void )
                 		c.offset_Center = 0;
                 	}
                 }
+
                 if(c.aa != -999){
             	/* クランク検知   */
                 	if(c.isCrank_F() == 1 && cntCrank < 500){
-                		m.Max_Speed = 0;
+                		m.Max_Speed = 30;
                 		pattern = 300;
                 	}
                     clankLR = c.isHalf_Line();
@@ -432,41 +433,29 @@ int main( void )
                 if(clankLR == 1) m.handle( 40 * HANDLE_STEP);
 
                 if(!c.isEndBlack()){
-                    pattern = 31;
+                    pattern = 310;
                 }
                 break;
             case 310:
-                m.motor(-40,-40,0);
-                if(!c.isSideLine()){
-                    pattern = 320;
-                }
-                break;
-            case 320:    // Brak;
-                d.led_OUT( 0x2);
-                m.motor(50,50,0);
-                c.offset_Center = 0;
-            //Left Clank
-                if(clankLR == -1) m.handle( -40 * HANDLE_STEP);
-            //Right Clank
-                if(clankLR == 1) m.handle( 40 * HANDLE_STEP);
-                if(!c.isEndBlack()){
+                if(!c.isCross()){
                     pattern = 31;
                 }
-                break;
+            	break;
             case 31:    // turn 90
                 d.led_OUT( 0x1);
             //Left Clank
                 if(clankLR == -1){
                     m.handle( -40 * HANDLE_STEP);
                     m.motor(0,50,0);
-                    if(c.isOut() == -1)pattern = 32;
+  //                  if(c.isOut() == -1)pattern = 32;
                 }
             //Right Clank
                 if(clankLR == 1){
                     m.handle( 40 * HANDLE_STEP);
                     m.motor(50,0,0);
-                    if(c.isOut() == 1)pattern = 32;
+   //                 if(c.isOut() == 1)pattern = 32;
                 }
+                if(c.aa > -5 && c.aa < 5)pattern = 32;
                 break;
             case 32:  
                 d.led_OUT( 0x0);
@@ -482,7 +471,7 @@ int main( void )
                      m.reset_tripmeter();
                      mem++;
 //                     saka = 0;
-                     pattern = 10;
+                     pattern = 34;
                 }
                 break;
             case 34:
@@ -676,7 +665,7 @@ void intTimer( void )
         		memory[m_number][0] = pattern;
         		memory[m_number][1] = c.aa;
         		memory[m_number][2] = c.cc;
-        		memory[m_number][3] = c.Center[19];
+        		memory[m_number][3] = c.isCrank_F();
         		memory[m_number][4] = c.isHalf_Line();
         		m_number++;
         		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;
