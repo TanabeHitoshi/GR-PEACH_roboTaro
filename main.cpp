@@ -39,7 +39,7 @@
 #define     STOP                0x03
 #define     ERROR               0xff
 
-#define     SPEED               70
+#define     SPEED               50
 #define		MAX_MEMORY			10000
 #define     mem_count           6
 #define     MEMORY
@@ -348,10 +348,11 @@ int main( void )
 
                 if(c.aa != -999){
             	/* クランク検知   */
-                	if(c.isCrank_F() == 1 && cntCrank < 500){
+ /*               	if(c.isCrank_F() == 1 && cntCrank < 500){
                 		m.Max_Speed = 30;
                 		pattern = 300;
                 	}
+*/
                     clankLR = c.isHalf_Line();
                     if(c.isCrank() != 0){
                         pattern = 30;
@@ -422,18 +423,26 @@ int main( void )
  //                   fprintf(fp,"%d,%ld\n\r",pattern+10,old_tripmeter);
                     cnt1 = 0;
                 }
+                if(cntCrank > 500){
+            		m.Max_Speed = SPEED;
+            		pattern = 10;
+                }
             	break;
             case 30:    // Brak;
                 d.led_OUT( 0x2);
                 m.motor(-100,-100,0);
                 c.offset_Center = 0;
             //Left Clank
-                if(clankLR == -1) m.handle( -40 * HANDLE_STEP);
+                if(clankLR == -1) m.handle( -45 * HANDLE_STEP);
             //Right Clank
-                if(clankLR == 1) m.handle( 40 * HANDLE_STEP);
+                if(clankLR == 1) m.handle( 45 * HANDLE_STEP);
 
-                if(!c.isEndBlack()){
-                    pattern = 310;
+                if(c.isEndBlack()){
+                    pattern = 31;
+                }
+                if(cnt1 > 150){
+                	m.motor(50,50,0);
+                	pattern = 320;
                 }
                 break;
             case 310:
@@ -441,31 +450,48 @@ int main( void )
                     pattern = 31;
                 }
             	break;
+            case 320:
+                if(c.isEndBlack()){
+                    pattern = 31;
+                }
+            	break;
             case 31:    // turn 90
                 d.led_OUT( 0x1);
             //Left Clank
                 if(clankLR == -1){
-                    m.handle( -40 * HANDLE_STEP);
+                    m.handle( -45 * HANDLE_STEP);
                     m.motor(0,50,0);
-  //                  if(c.isOut() == -1)pattern = 32;
+   //                 if(c.isOut() == -1)pattern = 32;
                 }
             //Right Clank
                 if(clankLR == 1){
-                    m.handle( 40 * HANDLE_STEP);
+                    m.handle( 45 * HANDLE_STEP);
                     m.motor(50,0,0);
    //                 if(c.isOut() == 1)pattern = 32;
                 }
-                if(c.aa > -5 && c.aa < 5)pattern = 32;
+//              if(c.aa > -10 && c.aa < 10)pattern = 32;
+              if(c.aa != -999)pattern = 32;
                 break;
             case 32:  
                 d.led_OUT( 0x0);
-                if(c.cc > -5 && c.cc < 5){
+                //Left Clank
+                    if(clankLR == -1 && (c.aa > -10 && c.aa < 0)){
+                        m.motor(30,30,0);
+                    	pattern = 33;
+                    }
+                //Right Clank
+                    if(clankLR == 1 && (c.aa < 10 && c.aa > 0)){
+                        m.motor(30,30,0);
+                    	pattern = 33;
+                    }
+                if(c.cc > -10 && c.cc < 10){
                      m.motor(30,30,0);
                      pattern = 33;
                 }
                 break;
             case 33:  //Return Nomal Trace
-                d.led_OUT( 0x0);
+                d.led_OUT( 0x3);
+                m.handle( iServo );
                 if(c.aa > -5 && c.aa < 5){
                      m.Max_Speed = SPEED;
                      m.reset_tripmeter();

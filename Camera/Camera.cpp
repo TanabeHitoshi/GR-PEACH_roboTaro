@@ -456,7 +456,7 @@ void Camera::LeastSquare(void)
             E += (40-y);
         }
     }
-    if(count > 30) {
+    if(count > 20) {
         aa = -Ka*(count*D - C*E) / (count*B - E*E);
         bb = (B*C - D*E) / (count*B - E*E);
         cc = 20 * (count*D - C*E) / (count*B - E*E) + (B*C - D*E) / (count*B - E*E);
