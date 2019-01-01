@@ -48,7 +48,7 @@ unsigned int Low_device::pushsw_get( void )
 //------------------------------------------------------------------//
 //Dipsw get Function
 //------------------------------------------------------------------//
-unsigned char dipsw_get( void )
+unsigned char Low_device::dipsw_get( void )
 {
     return( dipsw.read() & 0x0f );
 }

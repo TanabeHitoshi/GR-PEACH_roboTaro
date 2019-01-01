@@ -24,7 +24,7 @@ public:
     void reset_tripmeter( void );                       //tripmeter reset
     long get_tripmeter(void);                           // tripmeter value get
     int diff( int pwm );                                //image_sensorAnalog_get
-    int Max_Speed;                             //max speed
+     int Max_Speed;                             //max speed
     int accele_l, accele_r,mode;
     long tripmeter,tripmeter_l,tripmeter_r; /* PWM値の積分値     */
 private: 

@@ -39,7 +39,7 @@
 #define     STOP                0x03
 #define     ERROR               0xff
 
-#define     SPEED               50
+//#define     SPEED               50
 #define		MAX_MEMORY			10000
 #define     mem_count           6
 #define     MEMORY
@@ -82,7 +82,7 @@ volatile int            pattern;        /* Pattern numbers          */
 volatile int            status_set;     /* Status                   */
 int						memory[MAX_MEMORY][5];
 int						m_number;
-
+int 					SPEED;
 /* Trace by image processing */
 
 volatile int            digital_sensor_threshold;
@@ -222,6 +222,20 @@ int main( void )
 //    t = 0;
     flag = 0;
 //    saka = 0;
+    switch(d.dipsw_get() & 0x03){
+    case 0:
+    	SPEED = 48;
+    	break;
+    case 1:
+    	SPEED = 50;
+    	break;
+    case 2:
+    	SPEED = 52;
+    	break;
+    case 3:
+    	SPEED = 54;
+    	break;
+    }
 #ifdef  MEMORY
         pc.printf("Cource memory\n\r");
         FILE *fp= fopen("/sd/course.txt","a");
@@ -254,7 +268,7 @@ int main( void )
 //            pc.printf("isSideLine %2d　　isCrank_F %2d\r\n",c.isSideLine(),c.isCrank_F());
 //            pc.printf("c.isCrank %d  c.isCross %d  c.isBlack %d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
 //        pc.printf("pattern = %d\n\r",pattern);
-            
+//          pc.printf("dipsw %2d\n\r",d.dipsw_get());
 
  //       sideLR = c.isSideLine();
 
@@ -348,7 +362,7 @@ int main( void )
 
                 if(c.aa != -999){
             	/* クランク検知   */
- /*               	if(c.isCrank_F() == 1 && cntCrank < 500){
+/*                	if(c.isCrank_F() == 1 && cntCrank < 250){
                 		m.Max_Speed = 30;
                 		pattern = 300;
                 	}
@@ -418,12 +432,9 @@ int main( void )
                 clankLR = c.isHalf_Line();
                 if(c.isCrank() != 0){
                     pattern = 30;
-                    old_tripmeter = m.get_tripmeter();
- //                  pc.printf("clank tripmeter = %ld\n\r",old_tripmeter);
- //                   fprintf(fp,"%d,%ld\n\r",pattern+10,old_tripmeter);
                     cnt1 = 0;
                 }
-                if(cntCrank > 500){
+                if(cntCrank > 250){
             		m.Max_Speed = SPEED;
             		pattern = 10;
                 }
@@ -470,29 +481,51 @@ int main( void )
    //                 if(c.isOut() == 1)pattern = 32;
                 }
 //              if(c.aa > -10 && c.aa < 10)pattern = 32;
-              if(c.aa != -999)pattern = 32;
+              if(c.aa != -999){
+            	  cnt1 = 0;
+            	  pattern = 330;
+              }
                 break;
             case 32:  
                 d.led_OUT( 0x0);
                 //Left Clank
-                    if(clankLR == -1 && (c.aa > -10 && c.aa < 0)){
+                    if(clankLR == -1 && (c.aa > -10 && c.aa < 0 && cnt1 > 300)){
                         m.motor(30,30,0);
                     	pattern = 33;
                     }
                 //Right Clank
-                    if(clankLR == 1 && (c.aa < 10 && c.aa > 0)){
+                    if(clankLR == 1 && (c.aa < 10 && c.aa > 0 && cnt1 > 300)){
                         m.motor(30,30,0);
                     	pattern = 33;
                     }
-                if(c.cc > -10 && c.cc < 10){
-                     m.motor(30,30,0);
-                     pattern = 33;
-                }
-                break;
+                   break;
+            case 330:
+                //Left Clank
+                    if(clankLR == -1 && (c.Center[19] < 10 && c.Center[19] > 0 && cnt1 > 300)){
+                    	pattern = 335;
+                    }
+                //Right Clank
+                    if(clankLR == 1 && (c.Center[19] > -10 && c.Center[19] < 0 && cnt1 > 300)){
+                    	pattern = 335;
+                    }
+                   break;
+            case 335:
+                d.led_OUT( 0x0);
+                //Left Clank
+                    if(clankLR == -1 && (c.Center[19] > -10 && c.Center[19] < 0)){
+                        m.motor(30,30,0);
+                    	pattern = 33;
+                    }
+                //Right Clank
+                    if(clankLR == 1 && (c.Center[19] < 10 && c.Center[19] > 0)){
+                       m.motor(30,30,0);
+                    	pattern = 33;
+                    }
+                   break;
             case 33:  //Return Nomal Trace
                 d.led_OUT( 0x3);
                 m.handle( iServo );
-                if(c.aa > -5 && c.aa < 5){
+                if(c.aa > -10 && c.aa < 10){
                      m.Max_Speed = SPEED;
                      m.reset_tripmeter();
                      mem++;
@@ -691,7 +724,7 @@ void intTimer( void )
         		memory[m_number][0] = pattern;
         		memory[m_number][1] = c.aa;
         		memory[m_number][2] = c.cc;
-        		memory[m_number][3] = c.isCrank_F();
+        		memory[m_number][3] = c.Center[19];
         		memory[m_number][4] = c.isHalf_Line();
         		m_number++;
         		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;
