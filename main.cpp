@@ -233,7 +233,7 @@ int main( void )
     	SPEED = 52;
     	break;
     case 3:
-    	SPEED = 55;
+    	SPEED = 54;
     	break;
     }
 #ifdef  MEMORY
