@@ -262,10 +262,10 @@ int main( void )
     	if(pattern > 9 && pattern < 1000 && d.pushsw_get()) pattern = 1000;
         c.Capture();
  //       c.Binarization2_view();
-//        c.Binarization_view();
+ //       c.Binarization_view();
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
-//            pc.printf("isSideLine %2d　　isCrank_F %2d\r\n",c.isSideLine(),c.isCrank_F());
+//            pc.printf("isSideLine %2d　　All_Black %2d\r\n",c.isSideLine(),c.All_Black());
 //            pc.printf("c.isCrank %d  c.isCross %d  c.isBlack %d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
 //        pc.printf("pattern = %d\n\r",pattern);
 //          pc.printf("dipsw %2d\n\r",d.dipsw_get());
@@ -347,11 +347,11 @@ int main( void )
                 }else{
                 	SideLine = c.isSideLine();
                 	if(SideLine == -1){	//left
-                		m.Max_Speed = 50;
+                		m.Max_Speed = 30;
                 		c.offset_Center = -20;
                 		cntCrank = 0;
                 	}else if(SideLine == 1){ //Right
-                		m.Max_Speed = 50;
+                		m.Max_Speed = 30;
                 		c.offset_Center = 20;
                 		cntCrank = 0;
                 	}else{
@@ -376,9 +376,10 @@ int main( void )
                         cnt1 = 0;
                     }
                     /* レーンチェンジ検知    */
-                    if(c.All_Black() == 1 ){
+                    if(c.isBlack() == 1 ){
                         pattern = 51;     //Lean change
-                        LR = lanePattern[LR_Number];
+                        LR = c.isSideLine();
+//                        LR = lanePattern[LR_Number];
                         old_tripmeter = m.get_tripmeter();
     //                    pc.printf("line chang tripmeter = %ld\n\r",old_tripmeter);
     //                    fprintf(fp,"%d,%ld\n\r",pattern+10,old_tripmeter);
@@ -541,9 +542,13 @@ int main( void )
 //Lane change
             case 50:
                 d.led_OUT( 0x1);
-                if(c.isBlack() == 1)pattern = 51;           
+                if(c.isEndBlack() == 1)pattern = 51;
                 m.motor(30,30,0);
                 m.handle( iServo );               
+                if(c.isCrank() != 0){
+                    pattern = 30;
+                    cnt1 = 0;
+                }
                 break;
             case 51:
                 d.led_OUT(0x02);
@@ -565,7 +570,7 @@ int main( void )
                 break;
             case 52:    // Lean change
                 d.led_OUT( 0x3 );
-                m.motor(20,20,0);
+                m.motor(30,30,0);
             //Right Lane Change
                 if(LR == 1){
                     m.handle( 38 * HANDLE_STEP);
