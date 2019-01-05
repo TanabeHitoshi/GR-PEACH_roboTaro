@@ -261,7 +261,7 @@ int main( void )
     while(1) {
     	if(pattern > 9 && pattern < 1000 && d.pushsw_get()) pattern = 1000;
         c.Capture();
-        c.Binarization2_view();
+ //       c.Binarization2_view();
  //       c.Binarization_view();
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
@@ -311,7 +311,7 @@ int main( void )
             case 3: /* gate start */
                 if(c.BlackCount == 0 && !c.isCross())pattern = 5;
                 if( d.pushsw_get()){
-                    wait(1.5);
+                    wait(0.5);
                     pattern = 10;
                 }         
                 if( cnt1 < 100 ) {
@@ -441,9 +441,6 @@ int main( void )
             		pattern = 10;
                 }
             	break;
-            case 301:
-                m.motor(-100,-100,0);
-            	break;
             case 30:    // Brak;
                 d.led_OUT( 0x2);
                 m.motor(-100,-100,0);
@@ -453,6 +450,7 @@ int main( void )
             //Right Clank
                 if(clankLR == 1) m.handle( 40 * HANDLE_STEP);
 
+//                if(c.isCross()){
                 if(c.isEndBlack()){
                     pattern = 31;
                 }
@@ -494,35 +492,35 @@ int main( void )
             case 32:  
                 d.led_OUT( 0x0);
                 //Left Clank
-                    if(clankLR == -1 && (c.aa > -10 && c.aa < 0 && cnt1 > 300)){
+                    if(clankLR == -1 && (c.aa > -10 && c.aa < 0 && cnt1 > 250)){
                         m.motor(30,30,0);
                     	pattern = 33;
                     }
                 //Right Clank
-                    if(clankLR == 1 && (c.aa < 10 && c.aa > 0 && cnt1 > 300)){
+                    if(clankLR == 1 && (c.aa < 10 && c.aa > 0 && cnt1 > 250)){
                         m.motor(30,30,0);
                     	pattern = 33;
                     }
                    break;
             case 330:
                 //Left Clank
-                    if(clankLR == -1 && (c.Center[19] < 10 && c.Center[19] > 0 && cnt1 > 300)){
+                    if(clankLR == -1 && (c.Center[19] < 10 && c.Center[19] > 0 && cnt1 > 250)){
                     	pattern = 335;
                     }
                 //Right Clank
-                    if(clankLR == 1 && (c.Center[19] > -10 && c.Center[19] < 0 && cnt1 > 300)){
+                    if(clankLR == 1 && (c.Center[19] > -10 && c.Center[19] < 0 && cnt1 > 250)){
                     	pattern = 335;
                     }
                    break;
             case 335:
                 d.led_OUT( 0x0);
                 //Left Clank
-                    if(clankLR == -1 && (c.Center[19] > -10 && c.Center[19] < 0)){
+                    if(clankLR == -1 && (c.Center[19] > -20 && c.Center[19] < 0)){
                         m.motor(30,30,0);
                     	pattern = 33;
                     }
                 //Right Clank
-                    if(clankLR == 1 && (c.Center[19] < 10 && c.Center[19] > 0)){
+                    if(clankLR == 1 && (c.Center[19] < 20 && c.Center[19] > 0)){
                        m.motor(30,30,0);
                     	pattern = 33;
                     }
@@ -603,7 +601,7 @@ int main( void )
                 break;
             case 54:
                 d.led_OUT( 0x1);
-                m.run( 50, iServo );
+                m.run( 70, iServo );
                 m.handle( iServo);
                 if(c.cc > -5 && c.cc < 5) {
                     pattern = 55;
@@ -733,7 +731,7 @@ void intTimer( void )
         		memory[m_number][0] = pattern;
         		memory[m_number][1] = c.aa;
         		memory[m_number][2] = c.cc;
-        		memory[m_number][3] = c.BlackCount;
+        		memory[m_number][3] = c.Center[19];
         		memory[m_number][4] = c.isSideLine();
         		m_number++;
         		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;

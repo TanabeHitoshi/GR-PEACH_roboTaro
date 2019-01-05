@@ -109,8 +109,8 @@ int isCamera::isSideLine(void)
 		}
 
 		sideWide[y] = L[y] - R[y];
-		if(sideWide[y] > 25 )L_side++;
-		if(sideWide[y] < -25 )R_side++;
+		if(sideWide[y] > 15 )L_side++;
+		if(sideWide[y] < -15 )R_side++;
 		if(R_side > 3)LR = -1;
 		if(L_side > 3)LR = 1;
 //		printf("%d L = %d    R = %d  R-L %d\r\n",y,L[y],R[y],sideWide[y]);
