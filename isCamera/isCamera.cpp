@@ -79,8 +79,8 @@ int isCamera::isHalf_Line(void)
                 count_l++;
         }
     }
-    if(count_l - count_r > 2)return -1;
-    else if(count_l - count_r < -2)return 1;
+    if(count_l - count_r > 1)return -1;
+    else if(count_l - count_r < -1)return 1;
     else return 0;
 }
 //--------------------------------------------------------------------//
@@ -126,7 +126,7 @@ int isCamera::isSideLine(void)
 // 0 -> non black  1 -> black
 int isCamera::isBlack(void)
 {
-    if(BlackCount > 15)
+    if(BlackCount > 20)
         return 1;
     else
         return 0;

@@ -261,7 +261,7 @@ int main( void )
     while(1) {
     	if(pattern > 9 && pattern < 1000 && d.pushsw_get()) pattern = 1000;
         c.Capture();
- //       c.Binarization2_view();
+        c.Binarization2_view();
  //       c.Binarization_view();
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
@@ -269,6 +269,7 @@ int main( void )
 //            pc.printf("c.isCrank %d  c.isCross %d  c.isBlack %d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
 //        pc.printf("pattern = %d\n\r",pattern);
 //          pc.printf("dipsw %2d\n\r",d.dipsw_get());
+//        pc.printf("BlackCount %2d\n\r",c.BlackCount);
 
  //       sideLR = c.isSideLine();
 
@@ -348,11 +349,11 @@ int main( void )
                 	SideLine = c.isSideLine();
                 	if(SideLine == -1){	//left
                 		m.Max_Speed = 30;
-                		c.offset_Center = -20;
+                		c.offset_Center = 0;
                 		cntCrank = 0;
                 	}else if(SideLine == 1){ //Right
                 		m.Max_Speed = 30;
-                		c.offset_Center = 20;
+                		c.offset_Center = 0;
                 		cntCrank = 0;
                 	}else{
                 		m.Max_Speed = SPEED;
@@ -360,7 +361,7 @@ int main( void )
                 	}
                 }
 
-                if(c.aa != -999){
+//                if(c.aa != -999){
             	/* クランク検知   */
 /*                	if(c.isCrank_F() == 1 && cntCrank < 250){
                 		m.Max_Speed = 30;
@@ -368,7 +369,7 @@ int main( void )
                 	}
 */
                     clankLR = c.isHalf_Line();
-                    if(c.isCrank() != 0){
+                    if(c.isCrank() != 0 && c.aa != -999){
                         pattern = 30;
                         old_tripmeter = m.get_tripmeter();
      //                  pc.printf("clank tripmeter = %ld\n\r",old_tripmeter);
@@ -384,7 +385,7 @@ int main( void )
     //                    pc.printf("line chang tripmeter = %ld\n\r",old_tripmeter);
     //                    fprintf(fp,"%d,%ld\n\r",pattern+10,old_tripmeter);
                     }
-                }
+//                }
                 if(mem == mem_count){
  //                   fprintf(fp,"END\n\r\n\r");
  //                   fclose(fp);
@@ -440,14 +441,17 @@ int main( void )
             		pattern = 10;
                 }
             	break;
+            case 301:
+                m.motor(-100,-100,0);
+            	break;
             case 30:    // Brak;
                 d.led_OUT( 0x2);
                 m.motor(-100,-100,0);
                 c.offset_Center = 0;
             //Left Clank
-                if(clankLR == -1) m.handle( -45 * HANDLE_STEP);
+                if(clankLR == -1) m.handle( -40 * HANDLE_STEP);
             //Right Clank
-                if(clankLR == 1) m.handle( 45 * HANDLE_STEP);
+                if(clankLR == 1) m.handle( 40 * HANDLE_STEP);
 
                 if(c.isEndBlack()){
                     pattern = 31;
@@ -471,13 +475,13 @@ int main( void )
                 d.led_OUT( 0x1);
             //Left Clank
                 if(clankLR == -1){
-                    m.handle( -45 * HANDLE_STEP);
+                    m.handle( -40 * HANDLE_STEP);
                     m.motor(0,50,0);
    //                 if(c.isOut() == -1)pattern = 32;
                 }
             //Right Clank
                 if(clankLR == 1){
-                    m.handle( 45 * HANDLE_STEP);
+                    m.handle( 40 * HANDLE_STEP);
                     m.motor(50,0,0);
    //                 if(c.isOut() == 1)pattern = 32;
                 }
@@ -729,8 +733,8 @@ void intTimer( void )
         		memory[m_number][0] = pattern;
         		memory[m_number][1] = c.aa;
         		memory[m_number][2] = c.cc;
-        		memory[m_number][3] = c.Center[19];
-        		memory[m_number][4] = c.isHalf_Line();
+        		memory[m_number][3] = c.BlackCount;
+        		memory[m_number][4] = c.isSideLine();
         		m_number++;
         		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;
          	}
