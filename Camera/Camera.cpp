@@ -148,10 +148,10 @@ void Camera::Binarization(void)
                     }
                 }
             }
-//            if(White[y] == 0)BlackCount++;
+            if(White2[y] == 0)F_BlackCount++;
         } else {
             //When black is a straight line
-//            BlackCount++;
+            F_BlackCount++;
             for(x = 0; x < 80; x++) {
                 Image_binarization2[x][y] = 0;
             }

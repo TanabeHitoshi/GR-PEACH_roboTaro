@@ -326,7 +326,7 @@ int main( void )
                 if(!c.isCross()){
                     pattern = 10;
                     cntCrank = 0;
-                    wait(1.0);
+                    wait(0.4);
                 }
                 if( cnt1 < cntLED ){
                     d.led_OUT( 0x01 );
@@ -344,15 +344,15 @@ int main( void )
 // Trace
             case 10:    // Normal trace
             	if(c.isCurve() == 1 ){
-                    m.Max_Speed = 50;
+                    m.Max_Speed = 52;
                 }else{
                 	SideLine = c.isSideLine();
                 	if(SideLine == -1){	//left
-                		m.Max_Speed = 30;
+                		m.Max_Speed = 50;
                 		c.offset_Center = 0;
                 		cntCrank = 0;
                 	}else if(SideLine == 1){ //Right
-                		m.Max_Speed = 30;
+                		m.Max_Speed = 50;
                 		c.offset_Center = 0;
                 		cntCrank = 0;
                 	}else{
@@ -370,6 +370,8 @@ int main( void )
 */
                     clankLR = c.isHalf_Line();
                     if(c.isCrank() != 0 && c.aa != -999){
+//                    if(c.isCrank_F() == 1 && c.aa != -999){
+                    	m.motor(-100,-100,0);
                         pattern = 30;
                         old_tripmeter = m.get_tripmeter();
      //                  pc.printf("clank tripmeter = %ld\n\r",old_tripmeter);
@@ -446,23 +448,35 @@ int main( void )
                 m.motor(-100,-100,0);
                 c.offset_Center = 0;
             //Left Clank
-                if(clankLR == -1) m.handle( -40 * HANDLE_STEP);
+                if(clankLR == -1) m.handle( -45 * HANDLE_STEP);
             //Right Clank
-                if(clankLR == 1) m.handle( 40 * HANDLE_STEP);
-
+                if(clankLR == 1) m.handle( 45 * HANDLE_STEP);
 //                if(c.isCross()){
                 if(c.isEndBlack()){
-                    pattern = 31;
+                    pattern = 310;
                 }
-                if(cnt1 > 150){
+                if(cnt1 > 250){
                 	m.motor(50,50,0);
                 	pattern = 320;
                 }
                 break;
             case 310:
-                if(!c.isCross()){
-                    pattern = 31;
-                }
+                //Left Clank
+                    if(clankLR == -1){
+                        m.handle( -45 * HANDLE_STEP);
+                        m.motor(-100,0,0);
+       //                 if(c.isOut() == -1)pattern = 32;
+                    }
+                //Right Clank
+                    if(clankLR == 1){
+                        m.handle( 45 * HANDLE_STEP);
+                        m.motor(0,-100,0);
+       //                 if(c.isOut() == 1)pattern = 32;
+                    }
+            	if(cnt1 > 200){
+            		pattern = 31;
+            		cnt1 = 0;
+            	}
             	break;
             case 320:
                 if(c.isEndBlack()){
@@ -473,13 +487,13 @@ int main( void )
                 d.led_OUT( 0x1);
             //Left Clank
                 if(clankLR == -1){
-                    m.handle( -40 * HANDLE_STEP);
+                    m.handle( -45 * HANDLE_STEP);
                     m.motor(0,50,0);
    //                 if(c.isOut() == -1)pattern = 32;
                 }
             //Right Clank
                 if(clankLR == 1){
-                    m.handle( 40 * HANDLE_STEP);
+                    m.handle( 45 * HANDLE_STEP);
                     m.motor(50,0,0);
    //                 if(c.isOut() == 1)pattern = 32;
                 }
@@ -545,7 +559,7 @@ int main( void )
             case 50:
                 d.led_OUT( 0x1);
                 if(c.isEndBlack() == 1)pattern = 51;
-                m.motor(30,30,0);
+                m.motor(40,40,0);
                 m.handle( iServo );               
                 if(c.isCrank() != 0){
                     pattern = 30;
@@ -612,7 +626,7 @@ int main( void )
                 d.led_OUT( 0x0);
  //               m.run( 100-c.Curve_value(), iServo );
                 if(c.isBlack() == 1) {
-                    m.motor(30,30,0);
+                    m.motor(50,50,0);
                 } else {
                     m.run( 70, iServo );
                     m.handle( iServo );

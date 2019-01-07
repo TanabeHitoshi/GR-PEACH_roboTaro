@@ -45,7 +45,7 @@ int isCamera::isCrank_F(void)
         	count++;
         }
     }
-    if(count > 1)return 1;
+    if(count > 1 && F_BlackCount > 1)return 1;
     else return 0;
 }
 //--------------------------------------------------------------------//
@@ -57,7 +57,7 @@ int isCamera::isCrank(void)
     int hl;
 
     hl = 0;
-    if(BlackCount > 3){
+    if(BlackCount > 1){
     	hl = isHalf_Line();
     }
     return hl;
@@ -176,9 +176,9 @@ int isCamera::Curve_value(void)
     int s;
     if(aa!= -999) {
         if(aa > 0)
-            s = aa*CV - curveCounter*20;
+            s = aa*CV - curveCounter*30;
         else
-            s = -aa*CV - curveCounter*20;
+            s = -aa*CV - curveCounter*30;
         if(s < 0) s =0;
     } else {
         s = 0;
