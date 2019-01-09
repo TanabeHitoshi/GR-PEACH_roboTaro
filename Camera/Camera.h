@@ -21,6 +21,8 @@
 #define     TOP     -1
 #define     non     0
 
+#define		Y_START		80
+
 #define     IMAGE_LINE          160     /* Y Line No                */
  //Define(NTSC-Video)
 //------------------------------------------------------------------//
@@ -94,6 +96,7 @@ public:
     uint8_t Width[40];                      //白線幅
     uint8_t Full_White[240],White[40],White2[10];
     int Center[40];
+    int F_start;						//image y start
     int aa;                                 //slope
     int bb;                                 //intercept
     int cc;                               //center value

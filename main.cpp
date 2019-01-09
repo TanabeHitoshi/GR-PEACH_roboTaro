@@ -222,7 +222,8 @@ int main( void )
 //    t = 0;
     flag = 0;
 //    saka = 0;
-    switch(d.dipsw_get() & 0x03){
+    c.F_start = Y_START;
+    switch(d.dipsw_get() & 0x07){
     case 0:
     	SPEED = 48;
     	break;
@@ -234,6 +235,12 @@ int main( void )
     	break;
     case 3:
     	SPEED = 54;
+    	break;
+    case 4:
+    	SPEED = 56;
+    	break;
+    case 5:
+    	SPEED = 58;
     	break;
     }
 #ifdef  MEMORY
@@ -344,8 +351,10 @@ int main( void )
 // Trace
             case 10:    // Normal trace
             	if(c.isCurve() == 1 ){
+            		c.F_start = Y_START;
                     m.Max_Speed = 50;
                 }else{
+                	c.F_start = Y_START - 40;
                 	SideLine = c.isSideLine();
                 	if(SideLine == -1){	//left
                 		m.Max_Speed = 50;
@@ -370,7 +379,7 @@ int main( void )
 */
                     clankLR = c.isHalf_Line();
                     if(c.isCrank() != 0 && c.aa != -999){
-//                    if(c.isCrank_F() == 1 && c.aa != -999){
+                    	c.F_start = Y_START;
                     	m.motor(-100,-100,0);
                         pattern = 30;
                         old_tripmeter = m.get_tripmeter();
@@ -381,6 +390,7 @@ int main( void )
                     /* レーンチェンジ検知    */
                     if(c.isBlack() == 1 ){
                         pattern = 51;     //Lean change
+                        c.F_start = Y_START;
                         LR = c.isSideLine();
 //                        LR = lanePattern[LR_Number];
                         old_tripmeter = m.get_tripmeter();

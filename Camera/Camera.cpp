@@ -83,7 +83,7 @@ void Camera::image_thinning_out(void)
     }
     for(y = 0; y < 40; y++) {
         for(x = 0; x < 80; x++) {
-            Image_thinning_out[x][y] = Raw_Y_component[x*3+40][y*2+50];
+            Image_thinning_out[x][y] = Raw_Y_component[x*3+40][y*2+F_start];
             if(Image_thinning_out[x][y] > Max[y]) Max[y] = Image_thinning_out[x][y];
             if(Image_thinning_out[x][y] < Min[y]) Min[y] = Image_thinning_out[x][y];
         }
