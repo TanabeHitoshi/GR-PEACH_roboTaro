@@ -262,7 +262,7 @@ int main( void )
     	if(pattern > 9 && pattern < 1000 && d.pushsw_get()) pattern = 1000;
         c.Capture();
  //       c.Binarization2_view();
- //       c.Binarization_view();
+//        c.Binarization_view();
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
 //            pc.printf("isSideLine %2d　　All_Black %2d\r\n",c.isSideLine(),c.All_Black());
@@ -344,7 +344,7 @@ int main( void )
 // Trace
             case 10:    // Normal trace
             	if(c.isCurve() == 1 ){
-                    m.Max_Speed = 52;
+                    m.Max_Speed = 50;
                 }else{
                 	SideLine = c.isSideLine();
                 	if(SideLine == -1){	//left

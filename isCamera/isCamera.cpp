@@ -71,7 +71,7 @@ int isCamera::isHalf_Line(void)
     int y;
     int count_r,count_l;
     count_r = count_l = 0;
-    for(y=5; y < 35; y++) {
+    for(y=0; y < 35; y++) {
         if(Width[y] > (35 + (y-5)/6)) {
             if(Center[y]>0)
                 count_r++;
