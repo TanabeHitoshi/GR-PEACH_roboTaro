@@ -46,8 +46,8 @@ int isCamera::isCrank_F(void)
     LR = 0;L_side = 0;R_side = 0;
     for(y = 0; y < 5; y++){
     	R[y] = 0; L[y] = 0;
-		for(cnt = 10; cnt < 40; cnt++){
-			if(White2[y] < 30){
+		if(White2[y] < 30 && Image_binarization2[center_X][y] == 0){
+		for(cnt = 20; cnt < 40; cnt++){
 			 if(R[y] == 0){
 				if(Image_binarization2[center_X + cnt][y] == 1)R[y] = cnt;     //右に発見
 			 }
@@ -60,14 +60,14 @@ int isCamera::isCrank_F(void)
 		sideWide[y] = L[y] - R[y];
 		if(sideWide[y] > 15 )L_side++;
 		if(sideWide[y] < -15 )R_side++;
-		if(R_side > 1)LR = 1;
-		if(L_side > 1)LR = 1;
-		printf("%2d L = %2d    R = %2d  R-L %4d\r\n",y,L[y],R[y],sideWide[y]);
+		if(R_side > 0)LR = 1;
+		if(L_side > 0)LR = 1;
+//		printf("%2d L = %2d    R = %2d  R-L %4d\r\n",y,L[y],R[y],sideWide[y]);
     }
 
     count = 0;
     for(y=5; y < 10; y++) {
-        if(White2[y] > 35) {
+        if(White2[y] >= 35) {
         	count++;
         }
     }

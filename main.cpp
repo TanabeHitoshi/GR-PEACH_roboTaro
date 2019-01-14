@@ -133,6 +133,7 @@ int main( void )
     int mem;                               //記録回数
 //    int saka;
     int SideLine;
+    int Crank_State;
 
     /* NTSC-Video */
     DisplayBase::graphics_error_t error;
@@ -274,7 +275,7 @@ int main( void )
 //        c.Full_Raw_view();
 //            pc.printf("isSideLine %2d　　All_Black %2d\r\n",c.isSideLine(),c.All_Black());
 //            pc.printf("isCrabk_F %2d\r\n",c.isCrank_F());
-//            pc.printf("c.isCrank %d  c.isCross %d  c.isBlack %d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
+//            pc.printf("c.isCrank %2d  c.isCross %2d  c.isBlack %2d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
 //        pc.printf("pattern = %d\n\r",pattern);
 //          pc.printf("dipsw %2d\n\r",d.dipsw_get());
 //        pc.printf("BlackCount %2d\n\r",c.BlackCount);
@@ -373,16 +374,10 @@ int main( void )
 
 //                if(c.aa != -999){
             	/* クランク検知   */
-/*                	if(c.isCrank_F() == 1 && cntCrank < 250){
-                		m.Max_Speed = 30;
-                		pattern = 300;
-                	}
-*/
-                    clankLR = c.isHalf_Line();
                     if(c.isCrank_F() != 0 && c.aa != -999 ){
-                    	c.F_start = Y_START;
+                    	c.F_start = Y_START - 30;
                     	m.motor(-100,-100,0);
-                        pattern = 30;
+                        pattern = 300;
                         old_tripmeter = m.get_tripmeter();
      //                  pc.printf("clank tripmeter = %ld\n\r",old_tripmeter);
      //                   fprintf(fp,"%d,%ld\n\r",pattern+10,old_tripmeter);
@@ -424,7 +419,7 @@ int main( void )
                     m.handle( 25 * HANDLE_STEP );
             	}
             	if(c.Center[19] < 0){
-                    m.run( 100, 30 * HANDLE_STEP );
+                    m.run( 80, 30 * HANDLE_STEP );
                     m.handle( 30 * HANDLE_STEP );
             	}
             	if(c.Center[19] < 25 && c.Center[19] > 0) pattern = 10;
@@ -435,7 +430,7 @@ int main( void )
                     m.handle( -25 * HANDLE_STEP );
             	}
             	if(c.Center[19] > 0){
-                    m.run( 100, -30 * HANDLE_STEP );
+                    m.run( 80, -30 * HANDLE_STEP );
                     m.handle( -30 * HANDLE_STEP );
             	}
 
@@ -443,45 +438,48 @@ int main( void )
             break;
 // clank
             case 300:
-            	m.motor(0,0,0);
-                m.handle( iServo );
                 clankLR = c.isHalf_Line();
-                if(c.isCrank() != 0){
+                if(c.isHalf_Line() != 0 || c.isHalf_Line() != 0){
+                	c.F_start = Y_START;
+                	if(cnt1 > 70) Crank_State = 1;
+                	else Crank_State = 0;
+                	m.motor(0,0,0);
                     pattern = 30;
                     cnt1 = 0;
                 }
-                if(cntCrank > 250){
-            		m.Max_Speed = SPEED;
-            		pattern = 10;
-                }
+                if(cnt1 > 500)pattern = 10;
             	break;
             case 30:    // Brak;
                 d.led_OUT( 0x2);
-                m.motor(-100,-100,0);
+                if(cnt1< 15) m.motor(-100,-100,0);
+                else m.motor(0,0,0);
                 c.offset_Center = 0;
             //Left Clank
-                if(clankLR == -1) m.handle( -45 * HANDLE_STEP);
-            //Right Clank
-                if(clankLR == 1) m.handle( 45 * HANDLE_STEP);
-//                if(c.isCross()){
-                if(c.isEndBlack()){
-                    pattern = 310;
+                if(clankLR == -1){
+                	if(Crank_State) m.handle( -35 * HANDLE_STEP);
+                	else m.handle( -45 * HANDLE_STEP);
                 }
-                if(cnt1 > 200){
-                	m.motor(50,50,0);
-                	pattern = 320;
+            //Right Clank
+                if(clankLR == 1){
+                	if(Crank_State) m.handle( 35 * HANDLE_STEP);
+                	else m.handle( 45 * HANDLE_STEP);
+                }
+                if(c.isEndBlack()){
+                    pattern = 31;
                 }
                 break;
             case 310:
                 //Left Clank
                     if(clankLR == -1){
-                        m.handle( -45 * HANDLE_STEP);
-                        m.motor(-100,0,0);
+                    	if(Crank_State) m.handle( -35 * HANDLE_STEP);
+                    	else m.handle( -45 * HANDLE_STEP);
+                       m.motor(-100,0,0);
        //                 if(c.isOut() == -1)pattern = 32;
                     }
                 //Right Clank
                     if(clankLR == 1){
-                        m.handle( 45 * HANDLE_STEP);
+                    	if(Crank_State) m.handle( 35 * HANDLE_STEP);
+                    	else m.handle( 45 * HANDLE_STEP);
                         m.motor(0,-100,0);
        //                 if(c.isOut() == 1)pattern = 32;
                     }
@@ -501,15 +499,12 @@ int main( void )
                 if(clankLR == -1){
                     m.handle( -45 * HANDLE_STEP);
                     m.motor(0,50,0);
-   //                 if(c.isOut() == -1)pattern = 32;
                 }
             //Right Clank
                 if(clankLR == 1){
                     m.handle( 45 * HANDLE_STEP);
-                    m.motor(45,0,0);
-   //                 if(c.isOut() == 1)pattern = 32;
+                    m.motor(50,0,0);
                 }
-//              if(c.aa > -10 && c.aa < 10)pattern = 32;
               if(c.aa != -999){
             	  cnt1 = 0;
             	  pattern = 330;
@@ -530,26 +525,35 @@ int main( void )
                    break;
             case 330:
                 //Left Clank
-                    if(clankLR == -1 && (c.Center[19] < 10 && c.Center[19] > 0 && cnt1 > 250)){
+                    if(clankLR == -1 && (c.Center[19] < 11 && c.Center[19] > 0 && cnt1 > 250)){
                     	pattern = 335;
                     }
                 //Right Clank
-                    if(clankLR == 1 && (c.Center[19] > -10 && c.Center[19] < 0 && cnt1 > 350)){
+                    if(clankLR == 1 && (c.Center[19] > -11 && c.Center[19] < 0 && cnt1 > 350)){
                     	pattern = 335;
                     }
                     if(clankLR == 1 && c.aa > -5 && c.aa < 5 && cnt1 > 350){
                     	pattern = 335;
                     }
+                //Left Clank
+                    if(clankLR == -1){
+//                    	if(pre_center >  c.Center[19])pattern = 335;
+                    }
+                //Right Clank
+                    if(clankLR == 1 ){
+//                    	if(pre_center <  c.Center[19])pattern = 335;
+                   }
+
                    break;
             case 335:
                 d.led_OUT( 0x0);
                 //Left Clank
-                    if(clankLR == -1 && (c.Center[19] > -20 && c.Center[19] < 0)){
+                    if(clankLR == -1 && (c.Center[19] > -25 && c.Center[19] < 0)){
                         m.motor(30,30,0);
                     	pattern = 33;
                     }
                 //Right Clank
-                    if(clankLR == 1 && (c.Center[19] < 20 && c.Center[19] > 0)){
+                    if(clankLR == 1 && (c.Center[19] < 25 && c.Center[19] > 0)){
                        m.motor(30,30,0);
                     	pattern = 33;
                     }
@@ -589,11 +593,11 @@ int main( void )
                 c.offset_Center = 0;
             //Right Lane Change
                 if(LR == 1){
-                    m.handle( 38 * HANDLE_STEP);
+                    m.handle( 30 * HANDLE_STEP);
                 }
             //Left Lane Change
                 else{
-                    m.handle( -38 * HANDLE_STEP);
+                    m.handle( -30 * HANDLE_STEP);
                 }
                 if(c.All_Black()){
                     pattern = 52;
@@ -604,12 +608,12 @@ int main( void )
                 m.motor(30,30,0);
             //Right Lane Change
                 if(LR == 1){
-                    m.handle( 38 * HANDLE_STEP);
+                    m.handle( 30 * HANDLE_STEP);
                     if(c.isOut() == 1)pattern =53;
                 }
             //Left Lane Change
                 else{
-                    m.handle( -38 * HANDLE_STEP);
+                    m.handle( -30 * HANDLE_STEP);
                     if(c.isOut() == -1)pattern =53;
                 }
                 if(c.All_Black()){
@@ -621,18 +625,20 @@ int main( void )
                 d.led_OUT( 0x2 );
                 m.motor(30,30,0);
                 //Right Lane Change
-                if(LR == 1) m.handle( 10 * HANDLE_STEP);
+                if(LR == 1) m.handle( 8 * HANDLE_STEP);
                 //Left Lane Change
-                else m.handle( -10 * HANDLE_STEP);
-                 if(c.cc > -10 && c.cc < 10) {
+                else m.handle( -8 * HANDLE_STEP);
+                if(c.cc != -999){
+//                 if(c.cc > -10 && c.cc < 10) {
                     pattern = 54;
                 }
                 break;
             case 54:
                 d.led_OUT( 0x1);
-                m.run( 70, iServo );
+                m.motor(30,30,0);
+//                m.run( 50, iServo );
                 m.handle( iServo);
-                if(c.cc > -5 && c.cc < 5) {
+                if(c.cc > -10 && c.cc < 10 && c.aa != 0) {
                     pattern = 55;
                     cnt1 = 0;
                 }
@@ -643,7 +649,7 @@ int main( void )
                 if(c.isBlack() == 1) {
                     m.motor(50,50,0);
                 } else {
-                    m.run( 70, iServo );
+                    m.run( 0, iServo );
                     m.handle( iServo );
                 }
                 if( cnt1 > 1000 ){
@@ -761,7 +767,7 @@ void intTimer( void )
         		memory[m_number][1] = c.aa;
         		memory[m_number][2] = c.cc;
         		memory[m_number][3] = c.Center[19];
-        		memory[m_number][4] = c.isSideLine();
+        		memory[m_number][4] = c.isBlack();
         		m_number++;
         		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;
          	}
