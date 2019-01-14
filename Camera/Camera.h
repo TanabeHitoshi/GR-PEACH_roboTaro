@@ -100,7 +100,7 @@ public:
     int aa;                                 //slope
     int bb;                                 //intercept
     int cc;                               //center value
-    int BlackCount,F_BlackCount;                      // Black count
+    int BlackCount,F_BlackCount,BlackPlace;                      // Black count
     int offset_Center;                        // Camera x axis offset
 
 private:  

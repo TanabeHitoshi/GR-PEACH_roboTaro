@@ -268,11 +268,12 @@ int main( void )
     while(1) {
     	if(pattern > 9 && pattern < 1000 && d.pushsw_get()) pattern = 1000;
         c.Capture();
- //       c.Binarization2_view();
+//        c.Binarization2_view();
 //        c.Binarization_view();
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
 //            pc.printf("isSideLine %2d　　All_Black %2d\r\n",c.isSideLine(),c.All_Black());
+//            pc.printf("isCrabk_F %2d\r\n",c.isCrank_F());
 //            pc.printf("c.isCrank %d  c.isCross %d  c.isBlack %d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
 //        pc.printf("pattern = %d\n\r",pattern);
 //          pc.printf("dipsw %2d\n\r",d.dipsw_get());
@@ -284,7 +285,7 @@ int main( void )
             case 0:
                 /* wait for switch input */
                 m.handle( 0 );
-                m.motor( 0, 0 ,0);
+                m.motor( 0,0 ,0);
                 if( d.pushsw_get() ) {
                     m.reset_tripmeter();
                     m.Max_Speed = SPEED;
@@ -351,10 +352,10 @@ int main( void )
 // Trace
             case 10:    // Normal trace
             	if(c.isCurve() == 1 ){
-            		c.F_start = Y_START;
+            		if(cntCrank > 500) c.F_start = Y_START;
                     m.Max_Speed = 50;
                 }else{
-                	c.F_start = Y_START - 40;
+                	c.F_start = Y_START - 0;
                 	SideLine = c.isSideLine();
                 	if(SideLine == -1){	//left
                 		m.Max_Speed = 50;
@@ -378,7 +379,7 @@ int main( void )
                 	}
 */
                     clankLR = c.isHalf_Line();
-                    if(c.isCrank() != 0 && c.aa != -999){
+                    if(c.isCrank_F() != 0 && c.aa != -999 ){
                     	c.F_start = Y_START;
                     	m.motor(-100,-100,0);
                         pattern = 30;
@@ -388,7 +389,7 @@ int main( void )
                         cnt1 = 0;
                     }
                     /* レーンチェンジ検知    */
-                    if(c.isBlack() == 1 ){
+                    if(c.isBlack() == 1){
                         pattern = 51;     //Lean change
                         c.F_start = Y_START;
                         LR = c.isSideLine();
@@ -406,6 +407,7 @@ int main( void )
                 if(c.isHalf_Line() == 0){	//クランクで大曲と間違えないように
                 	if(c.Center[19] > 30) pattern = 12;
                 	if(c.Center[19] < -30) pattern = 13;
+//                	break;
                 }
                 m.run( 100-c.Curve_value(), iServo );
                 m.handle( iServo );
@@ -465,7 +467,7 @@ int main( void )
                 if(c.isEndBlack()){
                     pattern = 310;
                 }
-                if(cnt1 > 250){
+                if(cnt1 > 200){
                 	m.motor(50,50,0);
                 	pattern = 320;
                 }
@@ -483,7 +485,7 @@ int main( void )
                         m.motor(0,-100,0);
        //                 if(c.isOut() == 1)pattern = 32;
                     }
-            	if(cnt1 > 200){
+            	if(cnt1 > 100){
             		pattern = 31;
             		cnt1 = 0;
             	}
@@ -504,7 +506,7 @@ int main( void )
             //Right Clank
                 if(clankLR == 1){
                     m.handle( 45 * HANDLE_STEP);
-                    m.motor(50,0,0);
+                    m.motor(45,0,0);
    //                 if(c.isOut() == 1)pattern = 32;
                 }
 //              if(c.aa > -10 && c.aa < 10)pattern = 32;
@@ -532,7 +534,10 @@ int main( void )
                     	pattern = 335;
                     }
                 //Right Clank
-                    if(clankLR == 1 && (c.Center[19] > -10 && c.Center[19] < 0 && cnt1 > 250)){
+                    if(clankLR == 1 && (c.Center[19] > -10 && c.Center[19] < 0 && cnt1 > 350)){
+                    	pattern = 335;
+                    }
+                    if(clankLR == 1 && c.aa > -5 && c.aa < 5 && cnt1 > 350){
                     	pattern = 335;
                     }
                    break;

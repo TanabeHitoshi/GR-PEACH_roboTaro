@@ -159,9 +159,10 @@ void Camera::Binarization(void)
     }
 
     BlackCount = 0;
+
     for(y = 0; y < 40; y++) {
         //Determine the threshold
-        Ave[y] = (Max[y] + Min[y]) * 3 / 5;
+        Ave[y] = (Max[y] + Min[y]) * 7 / 10;
         // number of White  to zero
         White[y] = 0;
         if(Max[y] > 200) {
@@ -181,10 +182,14 @@ void Camera::Binarization(void)
                     }
                 }
             }
-            if(White[y] == 0)BlackCount++;
+            if(White[y] == 0){
+            	BlackPlace = y;
+            	BlackCount++;
+            }
         } else {
             //When black is a straight line
-            BlackCount++;
+        	BlackPlace = y;
+        	BlackCount++;
             for(x = 0; x < 80; x++) {
                 Image_binarization[x][y] = 0;
             }

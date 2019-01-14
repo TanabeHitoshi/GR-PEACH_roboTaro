@@ -36,16 +36,42 @@ int isCamera::isCross(void)
 // 0-> non  1-> right crank  -1-> left crank
 int isCamera::isCrank_F(void)
 {
-    int y;
+    int y,cnt;
+    int center_X = 40;
+    int L[10],R[10];
+    int sideWide[10];
+    int L_side,R_side;
     int count;
 
+    LR = 0;L_side = 0;R_side = 0;
+    for(y = 0; y < 5; y++){
+    	R[y] = 0; L[y] = 0;
+		for(cnt = 10; cnt < 40; cnt++){
+			if(White2[y] < 30){
+			 if(R[y] == 0){
+				if(Image_binarization2[center_X + cnt][y] == 1)R[y] = cnt;     //右に発見
+			 }
+			 if(L[y] == 0){
+				if(Image_binarization2[center_X - cnt][y] == 1)L[y] = cnt;      //左に発見
+			 }
+			}
+		}
+
+		sideWide[y] = L[y] - R[y];
+		if(sideWide[y] > 15 )L_side++;
+		if(sideWide[y] < -15 )R_side++;
+		if(R_side > 1)LR = 1;
+		if(L_side > 1)LR = 1;
+		printf("%2d L = %2d    R = %2d  R-L %4d\r\n",y,L[y],R[y],sideWide[y]);
+    }
+
     count = 0;
-    for(y=0; y < 10; y++) {
-        if(White2[y] > (40 + y)) {
+    for(y=5; y < 10; y++) {
+        if(White2[y] > 35) {
         	count++;
         }
     }
-    if(count > 1 && F_BlackCount > 1)return 1;
+    if(count > 1 && LR == 1)return 1;
     else return 0;
 }
 //--------------------------------------------------------------------//
@@ -57,8 +83,10 @@ int isCamera::isCrank(void)
     int hl;
 
     hl = 0;
-    if(BlackCount > 1){
-    	hl = isHalf_Line();
+    if(BlackCount > 2){
+//    	if(BlackPlace < 10){
+    		hl = isHalf_Line();
+//    	}
     }
     return hl;
 }
@@ -71,8 +99,8 @@ int isCamera::isHalf_Line(void)
     int y;
     int count_r,count_l;
     count_r = count_l = 0;
-    for(y=0; y < 35; y++) {
-        if(Width[y] > (35 + (y-5)/6)) {
+    for(y=5; y < 35; y++) {
+        if(Width[y] > (40 + (y-5)/6)) {
             if(Center[y]>0)
                 count_r++;
             else
@@ -113,7 +141,7 @@ int isCamera::isSideLine(void)
 		if(sideWide[y] < -15 )R_side++;
 		if(R_side > 3)LR = -1;
 		if(L_side > 3)LR = 1;
-//		printf("%d L = %d    R = %d  R-L %d\r\n",y,L[y],R[y],sideWide[y]);
+//		printf("%2d L = %2d    R = %2d  R-L %4d\r\n",y,L[y],R[y],sideWide[y]);
 
     }
 //    }
@@ -126,7 +154,7 @@ int isCamera::isSideLine(void)
 // 0 -> non black  1 -> black
 int isCamera::isBlack(void)
 {
-    if(BlackCount > 20)
+    if(BlackCount > 25)
         return 1;
     else
         return 0;
