@@ -273,6 +273,7 @@ int main( void )
 //        c.Binarization_view();
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
+//        c.image_thinning_out_view();
 //            pc.printf("isSideLine %2d　　All_Black %2d\r\n",c.isSideLine(),c.All_Black());
 //            pc.printf("isCrabk_F %2d\r\n",c.isCrank_F());
 //            pc.printf("c.isCrank %2d  c.isCross %2d  c.isBlack %2d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
