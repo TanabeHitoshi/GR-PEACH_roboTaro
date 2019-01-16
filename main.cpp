@@ -373,9 +373,9 @@ int main( void )
                 	}
                 }
 
-//                if(c.aa != -999){
             	/* クランク検知   */
-                    if(c.isCrank_F() != 0 && c.aa != -999 ){
+                if(c.isCurve() == 0 && c.aa != -999){
+                    if(c.isCrank_F() != 0 ){
                     	c.F_start = Y_START - 30;
                     	m.motor(-100,-100,0);
                         pattern = 300;
@@ -384,6 +384,7 @@ int main( void )
      //                   fprintf(fp,"%d,%ld\n\r",pattern+10,old_tripmeter);
                         cnt1 = 0;
                     }
+                }
                     /* レーンチェンジ検知    */
                     if(c.isBlack() == 1){
                         pattern = 51;     //Lean change
@@ -394,7 +395,6 @@ int main( void )
     //                    pc.printf("line chang tripmeter = %ld\n\r",old_tripmeter);
     //                    fprintf(fp,"%d,%ld\n\r",pattern+10,old_tripmeter);
                     }
-//                }
                 if(mem == mem_count){
  //                   fprintf(fp,"END\n\r\n\r");
  //                   fclose(fp);
@@ -403,7 +403,6 @@ int main( void )
                 if(c.isHalf_Line() == 0){	//クランクで大曲と間違えないように
                 	if(c.Center[19] > 30) pattern = 12;
                 	if(c.Center[19] < -30) pattern = 13;
-//                	break;
                 }
                 m.run( 100-c.Curve_value(), iServo );
                 m.handle( iServo );

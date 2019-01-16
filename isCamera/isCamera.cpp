@@ -33,7 +33,7 @@ int isCamera::isCross(void)
 //--------------------------------------------------------------------//
 
 //cheack Crank
-// 0-> non  1-> right crank  -1-> left crank
+// 0-> non  1-> crank
 int isCamera::isCrank_F(void)
 {
     int y,cnt;
@@ -47,14 +47,14 @@ int isCamera::isCrank_F(void)
     for(y = 0; y < 5; y++){
     	R[y] = 0; L[y] = 0;
 		if(White2[y] < 30 && Image_binarization2[center_X][y] == 0){
-		for(cnt = 20; cnt < 40; cnt++){
-			 if(R[y] == 0){
-				if(Image_binarization2[center_X + cnt][y] == 1)R[y] = cnt;     //右に発見
-			 }
-			 if(L[y] == 0){
-				if(Image_binarization2[center_X - cnt][y] == 1)L[y] = cnt;      //左に発見
-			 }
-			}
+			for(cnt = 20; cnt < 40; cnt++){
+				 if(R[y] == 0){
+					if(Image_binarization2[center_X + cnt][y] == 1)R[y] = cnt;     //右に発見
+				 }
+				 if(L[y] == 0){
+					if(Image_binarization2[center_X - cnt][y] == 1)L[y] = cnt;      //左に発見
+				 }
+				}
 		}
 
 		sideWide[y] = L[y] - R[y];
@@ -147,6 +147,43 @@ int isCamera::isSideLine(void)
 //    }
 //    printf("L_side = %d R_side = %d \r\n",L_side,R_side);
     return LR;
+}
+//--------------------------------------------------------------------//
+
+//cheack Front Black
+// 0-> non  1-> Black
+int isCamera::isBlack_F(void)
+{
+    int y,cnt;
+    int center_X = 40;
+    int L[10],R[10];
+    int sideWide[10];
+    int L_side,R_side;
+    int count;
+
+    LR = 0;L_side = 0;R_side = 0;
+    for(y = 0; y < 10; y++){
+    	R[y] = 0; L[y] = 0;
+		if(White2[y] < 30 && Image_binarization2[center_X][y] == 0){
+			for(cnt = 20; cnt < 40; cnt++){
+				 if(R[y] == 0){
+					if(Image_binarization2[center_X + cnt][y] == 1)R[y] = cnt;     //右に発見
+				 }
+				 if(L[y] == 0){
+					if(Image_binarization2[center_X - cnt][y] == 1)L[y] = cnt;      //左に発見
+				 }
+				}
+		}
+
+		sideWide[y] = L[y] - R[y];
+		if(sideWide[y] > 15 )L_side++;
+		if(sideWide[y] < -15 )R_side++;
+		if(R_side > 7)LR = 1;
+		if(L_side > 7)LR = 1;
+//		printf("%2d L = %2d    R = %2d  R-L %4d\r\n",y,L[y],R[y],sideWide[y]);
+    }
+    if(LR == 1)return 1;
+    else return 0;
 }
 //--------------------------------------------------------------------//
 
