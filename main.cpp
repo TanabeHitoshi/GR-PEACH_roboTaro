@@ -226,23 +226,30 @@ int main( void )
     c.F_start = Y_START;
     switch(d.dipsw_get() & 0x07){
     case 0:
-    	SPEED = 48;
-    	break;
-    case 1:
     	SPEED = 50;
     	break;
-    case 2:
+    case 1:
     	SPEED = 52;
     	break;
-    case 3:
+    case 2:
     	SPEED = 54;
     	break;
-    case 4:
+    case 3:
     	SPEED = 56;
     	break;
-    case 5:
+    case 4:
     	SPEED = 58;
     	break;
+    case 5:
+    	SPEED = 60;
+    	break;
+    case 6:
+    	SPEED = 62;
+    	break;
+    case 7:
+    	SPEED = 64;
+    	break;
+
     }
 #ifdef  MEMORY
         pc.printf("Cource memory\n\r");
@@ -274,9 +281,10 @@ int main( void )
 //        c.Full_Binarization_view();
 //        c.Full_Raw_view();
 //        c.image_thinning_out_view();
-//            pc.printf("isSideLine %2d　　All_Black %2d\r\n",c.isSideLine(),c.All_Black());
+//            pc.printf("isSideLine %2d　　isHalf_Line %2d\r\n",c.isSideLine(),c.isHalf_Line());
 //            pc.printf("isCrabk_F %2d\r\n",c.isCrank_F());
 //            pc.printf("c.isCrank %2d  c.isCross %2d  c.isBlack %2d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
+//            pc.printf("c.isBlack_F %2d\r\n",c.isBlack_F());
 //        pc.printf("pattern = %d\n\r",pattern);
 //          pc.printf("dipsw %2d\n\r",d.dipsw_get());
 //        pc.printf("BlackCount %2d\n\r",c.BlackCount);
@@ -336,7 +344,7 @@ int main( void )
                 if(!c.isCross()){
                     pattern = 10;
                     cntCrank = 0;
-                    wait(0.4);
+                    wait(0.2);
                 }
                 if( cnt1 < cntLED ){
                     d.led_OUT( 0x01 );
@@ -355,7 +363,7 @@ int main( void )
             case 10:    // Normal trace
             	if(c.isCurve() == 1 ){
             		if(cntCrank > 500) c.F_start = Y_START;
-                    m.Max_Speed = 50;
+                    m.Max_Speed = 51;
                 }else{
                 	c.F_start = Y_START - 0;
                 	SideLine = c.isSideLine();
@@ -386,7 +394,7 @@ int main( void )
                     }
                 }
                     /* レーンチェンジ検知    */
-                    if(c.isBlack() == 1){
+                    if(c.All_Black() == 1){
                         pattern = 51;     //Lean change
                         c.F_start = Y_START;
                         LR = c.isSideLine();
@@ -439,7 +447,7 @@ int main( void )
 // clank
             case 300:
                 clankLR = c.isHalf_Line();
-                if(c.isHalf_Line() != 0 || c.isHalf_Line() != 0){
+                if(c.isHalf_Line() != 0 ){
                 	c.F_start = Y_START;
                 	if(cnt1 > 70) Crank_State = 1;
                 	else Crank_State = 0;
@@ -447,12 +455,12 @@ int main( void )
                     pattern = 30;
                     cnt1 = 0;
                 }
-                if(cnt1 > 500)pattern = 10;
+                if(cnt1 > 150)pattern = 10;
             	break;
             case 30:    // Brak;
                 d.led_OUT( 0x2);
-                if(cnt1< 15) m.motor(-100,-100,0);
-                else m.motor(0,0,0);
+//                if(cnt1< 50) m.motor(-100,-100,0);
+//                else m.motor(0,0,0);
                 c.offset_Center = 0;
             //Left Clank
                 if(clankLR == -1){
@@ -535,15 +543,6 @@ int main( void )
                     if(clankLR == 1 && c.aa > -5 && c.aa < 5 && cnt1 > 350){
                     	pattern = 335;
                     }
-                //Left Clank
-                    if(clankLR == -1){
-//                    	if(pre_center >  c.Center[19])pattern = 335;
-                    }
-                //Right Clank
-                    if(clankLR == 1 ){
-//                    	if(pre_center <  c.Center[19])pattern = 335;
-                   }
-
                    break;
             case 335:
                 d.led_OUT( 0x0);
@@ -593,11 +592,11 @@ int main( void )
                 c.offset_Center = 0;
             //Right Lane Change
                 if(LR == 1){
-                    m.handle( 30 * HANDLE_STEP);
+                    m.handle( 35 * HANDLE_STEP);
                 }
             //Left Lane Change
                 else{
-                    m.handle( -30 * HANDLE_STEP);
+                    m.handle( -35 * HANDLE_STEP);
                 }
                 if(c.All_Black()){
                     pattern = 52;
@@ -605,15 +604,15 @@ int main( void )
                 break;
             case 52:    // Lean change
                 d.led_OUT( 0x3 );
-                m.motor(30,30,0);
+                m.motor(40,40,0);
             //Right Lane Change
                 if(LR == 1){
-                    m.handle( 30 * HANDLE_STEP);
+                    m.handle( 35 * HANDLE_STEP);
                     if(c.isOut() == 1)pattern =53;
                 }
             //Left Lane Change
                 else{
-                    m.handle( -30 * HANDLE_STEP);
+                    m.handle( -35 * HANDLE_STEP);
                     if(c.isOut() == -1)pattern =53;
                 }
                 if(c.All_Black()){
@@ -625,23 +624,59 @@ int main( void )
                 d.led_OUT( 0x2 );
                 m.motor(30,30,0);
                 //Right Lane Change
-                if(LR == 1) m.handle( 8 * HANDLE_STEP);
+                if(LR == 1) m.handle( 10 * HANDLE_STEP);
                 //Left Lane Change
-                else m.handle( -8 * HANDLE_STEP);
+                else m.handle( -10 * HANDLE_STEP);
                 if(c.cc != -999){
 //                 if(c.cc > -10 && c.cc < 10) {
-                    pattern = 54;
+                    pattern = 540;
                 }
                 break;
+            case 540:
+                d.led_OUT( 0x3 );
+                m.motor(30,30,0);
+                m.handle( 0);
+                //Right Lane Change
+                if(LR == 1){
+                    if(c.cc < 10 ){
+                        pattern = 54;
+                    }
+                }
+                //Left Lane Change
+                else{
+                    if(c.cc > -10){
+                        pattern = 54;
+                    }
+                }
+
+               break;
             case 54:
                 d.led_OUT( 0x1);
                 m.motor(30,30,0);
 //                m.run( 50, iServo );
-                m.handle( iServo);
+//                m.handle( iServo);
+
+                //Right Lane Change
+                if(LR == 1){
+                	m.handle( -25 * HANDLE_STEP);
+                    if(c.cc < 0 && c.cc > -5 ){
+                    	pattern = 55;
+                    	cnt1 = 0;
+                    }
+                	//Left Lane Change
+                }else{
+                	m.handle( 25 * HANDLE_STEP);
+                    if(c.cc > 0 && c.cc < 5){
+                    	pattern = 55;
+                    	cnt1 = 0;
+                    }
+                }
+/*
                 if(c.cc > -10 && c.cc < 10 && c.aa != 0) {
                     pattern = 55;
                     cnt1 = 0;
                 }
+*/
                 break;
             case 55:
                 d.led_OUT( 0x0);
@@ -649,10 +684,11 @@ int main( void )
                 if(c.isBlack() == 1) {
                     m.motor(50,50,0);
                 } else {
-                    m.run( 0, iServo );
+                    m.run( 50, iServo );
                     m.handle( iServo );
                 }
-                if( cnt1 > 1000 ){
+                if( cnt1 > 400 ){
+//                if( c.aa > -5 && c.aa < 5 && c.cc > -5 && c.cc < 5 ){
                     m.reset_tripmeter();
 //                    saka = 0;
                     mem++;
@@ -767,7 +803,7 @@ void intTimer( void )
         		memory[m_number][1] = c.aa;
         		memory[m_number][2] = c.cc;
         		memory[m_number][3] = c.Center[19];
-        		memory[m_number][4] = c.isBlack();
+        		memory[m_number][4] = c.isSideLine();
         		m_number++;
         		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;
          	}

@@ -71,7 +71,7 @@ int isCamera::isCrank_F(void)
         	count++;
         }
     }
-    if(count > 1 && LR == 1)return 1;
+    if(count > 0 && LR == 1)return 1;
     else return 0;
 }
 //--------------------------------------------------------------------//
@@ -100,7 +100,7 @@ int isCamera::isHalf_Line(void)
     int count_r,count_l;
     count_r = count_l = 0;
     for(y=5; y < 35; y++) {
-        if(Width[y] > (40 + (y-5)/6)) {
+        if(Width[y] > (25 + (y-5)/6)) {
             if(Center[y]>0)
                 count_r++;
             else
@@ -164,7 +164,7 @@ int isCamera::isBlack_F(void)
     LR = 0;L_side = 0;R_side = 0;
     for(y = 0; y < 10; y++){
     	R[y] = 0; L[y] = 0;
-		if(White2[y] < 30 && Image_binarization2[center_X][y] == 0){
+		if(White2[y] < 10 && Image_binarization2[center_X][y] == 0){
 			for(cnt = 20; cnt < 40; cnt++){
 				 if(R[y] == 0){
 					if(Image_binarization2[center_X + cnt][y] == 1)R[y] = cnt;     //右に発見
@@ -240,11 +240,12 @@ int isCamera::Curve_value(void)
 {
     int s;
     if(aa!= -999) {
+    	isCurve();
         if(aa > 0)
-            s = aa*CV - curveCounter*30;
+            s = aa*CV - curveCounter*50;
         else
-            s = -aa*CV - curveCounter*30;
-        if(s < 0) s =0;
+            s = -aa*CV - curveCounter*50;
+        if(s < 0) s = 0;
     } else {
         s = 0;
     }
@@ -304,7 +305,7 @@ int isCamera::isSlop(void)
 // 0 -> non Curve  1 ->Curve
 int isCamera::isCurve(void)
 {
-    if( aa > 5 || aa < -5) {
+    if( aa > 3 || aa < -3) {
         curveCounter++;
         return 1;
     } else {
