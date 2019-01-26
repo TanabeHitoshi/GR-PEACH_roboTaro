@@ -363,7 +363,7 @@ int main( void )
             case 10:    // Normal trace
             	if(c.isCurve() == 1 ){
             		if(cntCrank > 500) c.F_start = Y_START;
-                    m.Max_Speed = 51;
+                    m.Max_Speed = 49;
                 }else{
                 	c.F_start = Y_START - 0;
                 	SideLine = c.isSideLine();
