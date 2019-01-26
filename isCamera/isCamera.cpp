@@ -159,7 +159,7 @@ int isCamera::isBlack_F(void)
     int L[10],R[10];
     int sideWide[10];
     int L_side,R_side;
-    int count;
+//    int count;
 
     LR = 0;L_side = 0;R_side = 0;
     for(y = 0; y < 10; y++){
@@ -258,46 +258,36 @@ int isCamera::Curve_value(void)
 //--------------------------------------------------------------------//
 int isCamera::isSlop(void)
 {
-    int ret;
-    int cnt;
-    int center_X;
-    int L,R;
-    int    sideWide;
-    int Full_White;
-    
-    ret = 0;
-    Full_White = 0;
-    if( LR == 0 && Curve_value() < 3 && !isBlack()){
-        for(int x = 0; x < 320; x++) {
-            if( Raw_Y_component[x][20] >  Ave[0]) {
-                Full_binarization[x][20] = 1;   //white
-                Full_White++;
-//                 p.printf("1");
-           } else {
-                Full_binarization[x][20] = 0;   //black
-//                p.printf("0");
-            }
-        }
-        if(Full_White > 45){
-            center_X = Center[20] + 160;
-        //    p.printf("%5d\r\n\r\n",center_X);
-            R = 0; L = 0;
-            for(cnt = 0; cnt < 110; cnt++){
-                 if(R == 0){
-                    if(Full_binarization[(center_X + 50) + cnt][20] == 1)R = cnt;     //右に発見
-                 }
-                 if(L == 0){
-                    if(Full_binarization[(center_X - 50) - cnt][20] == 1)L = cnt;      //左に発見
-                 }
-            }
-            sideWide = R + L;
-//            p.printf("center_X = %d L = %d    R = %d  sideWide %d Full_White %d\r\n\r\n",center_X,L,R,sideWide,Full_White);
-            if( sideWide > 150 ) ret = UPDOWN;
-            else if( sideWide < 50 ) ret = TOP;
-            else ret = 0;
-        }
+    int y,cnt;
+    int center_X = 40;
+    int L[10],R[10];
+    int bothWide[10];
+    static int pre_bothWide[10];
+    int bothCount;
+
+    LR = 0;bothCount = 0;
+  //  if(aa > 3 && aa < -3){
+    for(y = 0; y < 10; y++){
+    	R[y] = 0; L[y] = 0;
+		for(cnt = 10; cnt < 40; cnt++){
+			 if(R[y] == 0){
+				if(Image_binarization2[center_X + cnt][y] == 1)R[y] = cnt;     //右に発見
+			 }
+			 if(L[y] == 0){
+				if(Image_binarization2[center_X - cnt][y] == 1)L[y] = cnt;      //左に発見
+			 }
+		}
+
+		bothWide[y] = L[y] + R[y];
+		if(pre_bothWide[y] - bothWide[y] > 5) bothCount++;
+		pre_bothWide[y] = bothWide[y];
+
+//		printf("%2d L = %2d    R = %2d  R+L %4d\r\n",y,L[y],R[y],bothWide[y]);
+
     }
-    return ret;
+//    }
+//    printf("L_side = %d R_side = %d \r\n",L_side,R_side);
+    return LR;
 }
 //--------------------------------------------------------------------//
 
