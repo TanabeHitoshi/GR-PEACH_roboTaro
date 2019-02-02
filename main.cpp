@@ -247,7 +247,7 @@ int main( void )
     	SPEED = 62;
     	break;
     case 7:
-    	SPEED = 64;
+    	SPEED = 70;
     	break;
 
     }
@@ -283,6 +283,7 @@ int main( void )
 //        c.image_thinning_out_view();
 //            pc.printf("isSideLine %2d　　isHalf_Line %2d\r\n",c.isSideLine(),c.isHalf_Line());
 //            pc.printf("isCrabk_F %2d\r\n",c.isCrank_F());
+//            pc.printf("isCrabk_M %2d\r\n",c.isCrank_M());
 //            pc.printf("c.isCrank %2d  c.isCross %2d  c.isBlack %2d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
 //            pc.printf("c.isBlack_F %2d\r\n",c.isBlack_F());
 //        pc.printf("pattern = %d\n\r",pattern);
@@ -329,8 +330,9 @@ int main( void )
             case 3: /* gate start */
                 if(c.BlackCount == 0 && !c.isCross())pattern = 5;
                 if( d.pushsw_get()){
+                	cnt1 = 0;
                     wait(0.5);
-                    pattern = 10;
+                    pattern = 6;
                 }         
                 if( cnt1 < 100 ) {
                     d.led_OUT( 0x1 );
@@ -342,7 +344,7 @@ int main( void )
             break;
             case 5:
                 if(!c.isCross()){
-                    pattern = 10;
+                    pattern = 6;
                     cntCrank = 0;
                     wait(0.2);
                 }
@@ -355,15 +357,15 @@ int main( void )
                 }
                 break;
             case 6:
-                if(m.get_tripmeter() > 10000)pattern = 10;  /* 約50cmまっすぐ    */
+                if(cnt1 > 1000)pattern = 10;  /* 約50cmまっすぐ    */
                 m.motor(70,70,0);
-//                m.handle( iServo );
+                m.handle( iServo );
                 break;
 // Trace
             case 10:    // Normal trace
             	if(c.isCurve() == 1 ){
             		if(cntCrank > 500) c.F_start = Y_START;
-                    m.Max_Speed = 49;
+                    m.Max_Speed = 70;
                 }else{
                 	c.F_start = Y_START - 0;
                 	SideLine = c.isSideLine();
@@ -446,6 +448,7 @@ int main( void )
             break;
 // clank
             case 300:
+            	m.motor(-100,-100,0);
                 clankLR = c.isHalf_Line();
                 if(c.isHalf_Line() != 0 ){
                 	c.F_start = Y_START;
@@ -455,7 +458,11 @@ int main( void )
                     pattern = 30;
                     cnt1 = 0;
                 }
+//                if(c.isCurve() == 1)pattern= 10;
                 if(cnt1 > 150)pattern = 10;
+            	break;
+            case 305:
+            	m.motor(0,0,0);
             	break;
             case 30:    // Brak;
                 d.led_OUT( 0x2);
