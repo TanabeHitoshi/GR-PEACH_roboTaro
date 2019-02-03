@@ -285,7 +285,7 @@ int main( void )
 //            pc.printf("isCrabk_F %2d\r\n",c.isCrank_F());
 //            pc.printf("isCrabk_M %2d\r\n",c.isCrank_M());
 //            pc.printf("c.isCrank %2d  c.isCross %2d  c.isBlack %2d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
-//            pc.printf("c.isBlack_F %2d\r\n",c.isBlack_F());
+//            pc.printf("c.All_Black %2d\r\n",c.All_Black());
 //        pc.printf("pattern = %d\n\r",pattern);
 //          pc.printf("dipsw %2d\n\r",d.dipsw_get());
 //        pc.printf("BlackCount %2d\n\r",c.BlackCount);
@@ -370,11 +370,11 @@ int main( void )
                 	c.F_start = Y_START - 0;
                 	SideLine = c.isSideLine();
                 	if(SideLine == -1){	//left
-                		m.Max_Speed = 50;
+//                		m.Max_Speed = 50;
                 		c.offset_Center = 0;
                 		cntCrank = 0;
                 	}else if(SideLine == 1){ //Right
-                		m.Max_Speed = 50;
+//                		m.Max_Speed = 50;
                 		c.offset_Center = 0;
                 		cntCrank = 0;
                 	}else{

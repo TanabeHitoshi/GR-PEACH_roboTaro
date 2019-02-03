@@ -163,7 +163,7 @@ int isCamera::isSideLine(void)
   //  if(aa > 3 && aa < -3){
     for(y = 0; y < 10; y++){
     	R[y] = 0; L[y] = 0;
-//		if(White2[y] < 30 && Image_binarization2[center_X][y] == 1){
+		if(White2[y] < 30 && Image_binarization2[center_X][y] == 0){
 			for(cnt = 10; cnt < 40; cnt++){
 				 if(R[y] == 0){
 					if(Image_binarization2[center_X + cnt][y] == 1)R[y] = cnt;     //右に発見
@@ -172,7 +172,7 @@ int isCamera::isSideLine(void)
 					if(Image_binarization2[center_X - cnt][y] == 1)L[y] = cnt;      //左に発見
 				 }
 			}
-//		}
+		}
 		sideWide[y] = L[y] - R[y];
 		if(sideWide[y] > 15 )L_side++;
 		if(sideWide[y] < -15 )R_side++;
@@ -257,15 +257,23 @@ int isCamera::isEndBlack(void)
 // 0 -> non black  1 -> black
 int isCamera::All_Black(void)
 {
-    int x;
+    int x,y;
     int count_w;
+    int center_X = 40;
     
     count_w = 0;
+/*
     for(x = 0;x < 80;x++){
         if(Image_binarization[x][39] == 1)
             count_w++;
     }
-    if(count_w < 5 && BlackCount > 30)
+*/
+    for(y = 30;y < 40; y++){
+    	if(White[y] > 10 && Image_binarization[center_X][y] == 1){
+    		count_w++;
+    	}
+    }
+    if(count_w > 3 && BlackCount > 30)
         return 1;
     else
         return 0;
