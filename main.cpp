@@ -80,6 +80,7 @@ volatile unsigned long  cnt1;           /* Used within main         */
 volatile unsigned long  cntCrank;       /* Used Crank check         */
 volatile int            pattern;        /* Pattern numbers          */
 volatile int            status_set;     /* Status                   */
+volatile int			pre_crove;		/* カーブからの復帰				*/
 int						memory[MAX_MEMORY][5];
 int						m_number;
 int 					SPEED;
@@ -220,6 +221,7 @@ int main( void )
     m.motor( 0, 0,0 );
     pattern = 0;
     cnt1 = 0;
+    pre_crove = 0;
 //    t = 0;
     flag = 0;
 //    saka = 0;
@@ -363,9 +365,10 @@ int main( void )
                 break;
 // Trace
             case 10:    // Normal trace
+            	/* カーブの速度制御 */
             	if(c.isCurve() == 1 ){
             		if(cntCrank > 500) c.F_start = Y_START;
-                    m.Max_Speed = 70;
+                    m.Max_Speed = 60;
                 }else{
                 	c.F_start = Y_START - 0;
                 	SideLine = c.isSideLine();
@@ -382,6 +385,14 @@ int main( void )
                 		c.offset_Center = 0;
                 	}
                 }
+            	/* カープからの復帰後 */
+            	if(pre_crove == 1){
+            		m.Max_Speed = 50;
+            		if(c.cc > -5 && c.cc < 5){
+                		m.Max_Speed = SPEED;
+            			pre_crove = 0;
+            		}
+            	}
 
             	/* クランク検知   */
                 if(c.isCurve() == 0 && c.aa != -999){
@@ -411,8 +422,8 @@ int main( void )
                     mem++;
                 }                
                 if(c.isHalf_Line() == 0){	//クランクで大曲と間違えないように
-                	if(c.Center[19] > 30) pattern = 12;
-                	if(c.Center[19] < -30) pattern = 13;
+                	if(c.Center[19] > 20) pattern = 12;
+                	if(c.Center[19] < -20) pattern = 13;
                 }
                 m.run( 100-c.Curve_value(), iServo );
                 m.handle( iServo );
@@ -424,7 +435,7 @@ int main( void )
             	break;
 // Large curve
             case 12:
-            	if(c.Center[19] > 25){
+            	if(c.Center[19] > 15){
                     m.run( 100, 25 * HANDLE_STEP );
                     m.handle( 25 * HANDLE_STEP );
             	}
@@ -432,10 +443,13 @@ int main( void )
                     m.run( 80, 30 * HANDLE_STEP );
                     m.handle( 30 * HANDLE_STEP );
             	}
-            	if(c.Center[19] < 25 && c.Center[19] > 0) pattern = 10;
+            	if(c.Center[19] < 25 && c.Center[19] > 0){
+            		pre_crove = 1;
+            		pattern = 10;
+            	}
             break;
             case 13:
-            	if(c.Center[19] < -25){
+            	if(c.Center[19] < -15){
                     m.run( 100, -25 * HANDLE_STEP );
                     m.handle( -25 * HANDLE_STEP );
             	}
@@ -443,9 +457,19 @@ int main( void )
                     m.run( 80, -30 * HANDLE_STEP );
                     m.handle( -30 * HANDLE_STEP );
             	}
-
-            	if(c.Center[19] > -25 && c.Center[19] < 0) pattern = 10;
+            	if(c.Center[19] > -25 && c.Center[19] < 0){
+            		pre_crove = 1;
+            		pattern = 10;
+            	}
             break;
+            case 15:
+            	d.led_OUT(0x0);
+                m.run( 50, iServo );
+                m.handle( iServo );
+            	if(c.Center[19] > -10 && c.Center[19] < 10) pattern = 10;
+                break;
+
+
 // clank
             case 300:
             	m.motor(-100,-100,0);
@@ -891,7 +915,7 @@ void led_status_set( int set )
 void ServoControl_process( void )
 {
 	if(c.cc != -999){
-		if(c.isCurve())   iServo = c.CurvePID();
+		if(c.isCurve() && !pre_crove)   iServo = c.CurvePID();
 		else                iServo = c.StrightPID();
 	}
 }
