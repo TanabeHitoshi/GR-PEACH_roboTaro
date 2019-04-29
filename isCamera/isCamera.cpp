@@ -58,8 +58,8 @@ int isCamera::isCrank_F(void)
 		}
 
 		sideWide[y] = L[y] - R[y];
-		if(sideWide[y] > 15 )L_side++;
-		if(sideWide[y] < -15 )R_side++;
+		if(sideWide[y] > 10 )L_side++;
+		if(sideWide[y] < -10 )R_side++;
 		if(R_side > 1)LR = 1;
 		if(L_side > 1)LR = 1;
 //		printf("%2d L = %2d    R = %2d  R-L %4d\r\n",y,L[y],R[y],sideWide[y]);
@@ -269,11 +269,12 @@ int isCamera::All_Black(void)
     }
 */
     for(y = 30;y < 40; y++){
-    	if(White[y] > 10 && Image_binarization[center_X][y] == 1){
+//    	if(White[y] > 10 && Image_binarization[center_X][y] == 1){
+    	if(White[y] > 10 && (Center[y] < 10 && Center[y] > -10)){
     		count_w++;
     	}
     }
-    if(count_w > 3 && BlackCount > 30)
+    if(count_w > 3 && BlackCount > 20)
         return 1;
     else
         return 0;

@@ -287,7 +287,7 @@ int main( void )
 //            pc.printf("isCrabk_F %2d\r\n",c.isCrank_F());
 //            pc.printf("isCrabk_M %2d\r\n",c.isCrank_M());
 //            pc.printf("c.isCrank %2d  c.isCross %2d  c.isBlack %2d  c.isEndBlack %d\r\n",c.isCrank(),c.isCross(),c.isBlack(),c.isEndBlack());
-//            pc.printf("c.All_Black %2d\r\n",c.All_Black());
+//           pc.printf("c.All_Black %2d\r\n",c.All_Black());
 //        pc.printf("pattern = %d\n\r",pattern);
 //          pc.printf("dipsw %2d\n\r",d.dipsw_get());
 //        pc.printf("BlackCount %2d\n\r",c.BlackCount);
@@ -368,7 +368,7 @@ int main( void )
             	/* カーブの速度制御 */
             	if(c.isCurve() == 1 ){
             		if(cntCrank > 500) c.F_start = Y_START;
-                    m.Max_Speed = 60;
+                    m.Max_Speed = 50;
                 }else{
                 	c.F_start = Y_START - 0;
                 	SideLine = c.isSideLine();
@@ -619,17 +619,17 @@ int main( void )
                 d.led_OUT(0x02);
  //               l++;
                 m.handle( 0 );
-                m.motor(-100,-100,0);
+                m.motor(-50,-50,0);
                 c.offset_Center = 0;
             //Right Lane Change
                 if(LR == 1){
-                    m.handle( 35 * HANDLE_STEP);
+                    m.handle( 30 * HANDLE_STEP);
                 }
             //Left Lane Change
                 else{
-                    m.handle( -35 * HANDLE_STEP);
+                    m.handle( -30 * HANDLE_STEP);
                 }
-                if(c.All_Black()){
+                if(c.isBlack()){
                     pattern = 52;
                 }
                 break;
@@ -638,12 +638,12 @@ int main( void )
                 m.motor(40,40,0);
             //Right Lane Change
                 if(LR == 1){
-                    m.handle( 35 * HANDLE_STEP);
+                    m.handle( 30 * HANDLE_STEP);
                     if(c.isOut() == 1)pattern =53;
                 }
             //Left Lane Change
                 else{
-                    m.handle( -35 * HANDLE_STEP);
+                    m.handle( -30 * HANDLE_STEP);
                     if(c.isOut() == -1)pattern =53;
                 }
                 if(c.All_Black()){

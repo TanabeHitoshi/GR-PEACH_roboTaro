@@ -214,7 +214,7 @@ void Camera::Binarization_view(void)
         }
         p.printf( "Max%3d Min%3d Ave%3d Width%3d Center%3d  White%3d\n\r",Max[y],Min[y],Ave[y],Width[y],Center[y],White[y]);
     }
-    p.printf( "aa%3d bb%3d cc%3d\n\r",aa,bb,cc);
+//    p.printf( "aa%3d bb%3d cc%3d\n\r",aa,bb,cc);
 }
 //------------------------------------------------------------------//
 // Bainarization viewer
