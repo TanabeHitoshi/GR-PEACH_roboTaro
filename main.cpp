@@ -83,7 +83,7 @@ volatile int            status_set;     /* Status                   */
 volatile int			pre_crove;		/* カーブからの復帰				*/
 int						memory[MAX_MEMORY][5];
 int						m_number;
-int 					SPEED;
+int 					SPEED,CV_SPEED;
 /* Trace by image processing */
 
 volatile int            digital_sensor_threshold;
@@ -422,8 +422,14 @@ int main( void )
                     mem++;
                 }                
                 if(c.isHalf_Line() == 0){	//クランクで大曲と間違えないように
-                	if(c.Center[19] > 20) pattern = 12;
-                	if(c.Center[19] < -20) pattern = 13;
+                	if(c.Center[19] > 20){
+                		pattern = 12;
+                		CV_SPEED = 30;
+                	}
+                	if(c.Center[19] < -20){
+                		pattern = 13;
+                		CV_SPEED = 30;
+                	}
                 }
                 m.run( 100-c.Curve_value(), iServo );
                 m.handle( iServo );
@@ -435,18 +441,37 @@ int main( void )
             	break;
 // Large curve
             case 12:
-            	if(c.Center[19] > 15){
-                    m.run( 100, 25 * HANDLE_STEP );
-                    m.handle( 25 * HANDLE_STEP );
+            	if(c.Center[19] > 20){
+            		m.Max_Speed = CV_SPEED;
+                    m.run( 100 , iServo );
+                    m.handle( iServo );
+                    CV_SPEED += 2;
+                    if(CV_SPEED > SPEED)CV_SPEED = SPEED;
             	}
-            	if(c.Center[19] < 0){
+               	if(c.aa == -999 || c.cc < 0){
+                    CV_SPEED = 30;
+            		m.Max_Speed = CV_SPEED;
+//                    m.run( 100 -c.Curve_value(), iServo );
+//                    m.handle( iServo );
+                    m.run( 100, 20* HANDLE_STEP );
+                    m.handle( 20 * HANDLE_STEP );
+            	}
+/*            	if(c.Center[19] < 0){
                     m.run( 80, 30 * HANDLE_STEP );
                     m.handle( 30 * HANDLE_STEP );
             	}
-            	if(c.Center[19] < 25 && c.Center[19] > 0){
+*/            	if(c.Center[19] < 25 && c.Center[19] > 0){
             		pre_crove = 1;
             		pattern = 10;
             	}
+				if(c.Center[19] < -20 && c.aa > 0){
+					pattern = 13;
+					CV_SPEED = 40;
+				}
+				if(c.Center[19] < -20 && c.aa < 0){
+                    m.run( 100, 0* HANDLE_STEP );
+                    m.handle( 0 );
+ 				}
             break;
             case 13:
             	if(c.Center[19] < -15){
@@ -834,7 +859,7 @@ void intTimer( void )
         		memory[m_number][1] = c.aa;
         		memory[m_number][2] = c.cc;
         		memory[m_number][3] = c.Center[19];
-        		memory[m_number][4] = c.isSideLine();
+        		memory[m_number][4] = m.Max_Speed;
         		m_number++;
         		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;
          	}
