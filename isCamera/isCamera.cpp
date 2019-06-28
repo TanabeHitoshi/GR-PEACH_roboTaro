@@ -288,9 +288,11 @@ int isCamera::Curve_value(void)
     if(aa!= -999) {
     	isCurve();
         if(aa > 0)
-            s = aa*CV - curveCounter*50;
+//            s = aa*CV - curveCounter*50;
+        	s = aa;
         else
-            s = -aa*CV - curveCounter*50;
+//            s = -aa*CV - curveCounter*50;
+        	s = -aa;
         if(s < 0) s = 0;
     } else {
         s = 0;

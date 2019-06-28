@@ -493,7 +493,7 @@ int Camera::CurvePID(void)
         preCenter = center;
         prepreCenter = preCenter;
     } else {
-        center = Center[19];                    // slop and intercept
+        center = Center[39];                    // slop and intercept
         iCenter +=  center - preCenter;
         h = center * Kp + iCenter * Ki + (center - preCenter) * Kd;
         preCenter = center;

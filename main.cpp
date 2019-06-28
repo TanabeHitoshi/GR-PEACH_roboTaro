@@ -231,16 +231,16 @@ int main( void )
     	SPEED = 40;
     	break;
     case 1:
-    	SPEED = 42;
+    	SPEED = 45;
     	break;
     case 2:
-    	SPEED = 44;
+    	SPEED = 47;
     	break;
     case 3:
-    	SPEED = 56;
+    	SPEED = 50;
     	break;
     case 4:
-    	SPEED = 58;
+    	SPEED = 55;
     	break;
     case 5:
     	SPEED = 60;
@@ -366,7 +366,7 @@ int main( void )
 // Trace
             case 10:    // Normal trace
             	/* カーブの速度制御 */
-            	if(c.isCurve() == 1 ){
+/*            	if(c.isCurve() == 1 ){
             		if(cntCrank > 500) c.F_start = Y_START;
                     m.Max_Speed = 50;
                 }else{
@@ -386,7 +386,7 @@ int main( void )
                 	}
                 }
             	/* カープからの復帰後 */
-            	if(pre_crove == 1){
+/*            	if(pre_crove == 1){
             		m.Max_Speed = 50;
             		if(c.cc > -5 && c.cc < 5){
                 		m.Max_Speed = SPEED;
@@ -422,45 +422,53 @@ int main( void )
                     mem++;
                 }                
                 if(c.isHalf_Line() == 0){	//クランクで大曲と間違えないように
-                	if(c.Center[19] > 20){
-                		pattern = 12;
+                	if(c.Center[19] > 15 && c.aa < 0){
+//                		pattern = 11;
                 		CV_SPEED = 30;
                 	}
-                	if(c.Center[19] < -20){
-                		pattern = 13;
+                	if(c.Center[19] < -15 && c.aa > 0){
+//                		pattern = 13;
                 		CV_SPEED = 30;
                 	}
                 }
-                m.run( 100-c.Curve_value(), iServo );
+                m.run( 100-c.Curve_value()*5, iServo );
                 m.handle( iServo );
                 break;
-            case 11:
-            	d.led_OUT(0x0);
-                m.run( 100, iServo );
-                m.handle( iServo );
-            	break;
 // Large curve
-            case 12:
-            	if(c.Center[19] > 20){
+            case 11:
+//            	if(c.Center[19] > 20){
             		m.Max_Speed = CV_SPEED;
-                    m.run( 100 , iServo );
+                    m.run( 100-c.Curve_value()*5 , iServo );
                     m.handle( iServo );
-                    CV_SPEED += 2;
+                    CV_SPEED += 5;
                     if(CV_SPEED > SPEED)CV_SPEED = SPEED;
-            	}
-               	if(c.aa == -999 || c.cc < 0){
-                    CV_SPEED = 30;
+//            	}
+                if(c.aa < 10 && c.aa > -10 && c.cc < 10 && c.cc > -10){
+                	m.Max_Speed = SPEED;
+                	pattern = 10;
+                }
+               	if(c.aa == -999){
+               		CV_SPEED = 40;
             		m.Max_Speed = CV_SPEED;
-//                    m.run( 100 -c.Curve_value(), iServo );
-//                    m.handle( iServo );
-                    m.run( 100, 20* HANDLE_STEP );
-                    m.handle( 20 * HANDLE_STEP );
+            		pattern = 12;
             	}
+            break;
+            case 12:
+        		m.run( 100, 20* HANDLE_STEP );
+                m.handle( 18 * HANDLE_STEP );
+                if(c.aa != -999){
+                	if(c.aa > 30){
+                		pattern = 15;
+                	}else {
+                		pattern = 11;
+                	}
+                }
+            break;
 /*            	if(c.Center[19] < 0){
                     m.run( 80, 30 * HANDLE_STEP );
                     m.handle( 30 * HANDLE_STEP );
             	}
-*/            	if(c.Center[19] < 25 && c.Center[19] > 0){
+            	if(c.Center[19] < 25 && c.Center[19] > 0){
             		pre_crove = 1;
             		pattern = 10;
             	}
@@ -472,13 +480,30 @@ int main( void )
                     m.run( 100, 0* HANDLE_STEP );
                     m.handle( 0 );
  				}
-            break;
+*/            break;
             case 13:
-            	if(c.Center[19] < -15){
-                    m.run( 100, -25 * HANDLE_STEP );
-                    m.handle( -25 * HANDLE_STEP );
+//            	if(c.Center[19] < -20){
+            		m.Max_Speed = CV_SPEED;
+                    m.run( 100-c.Curve_value()*5 , iServo );
+                    m.handle( iServo );
+                    CV_SPEED += 5;
+                    if(CV_SPEED > SPEED)CV_SPEED = SPEED;
+//            	}
+                    if(c.Center[19] < 15 && c.Center[19] > -15){
+                    	m.Max_Speed = SPEED;
+                    	pattern = 10;
+                    }
+               	if(c.aa == -999){
+               		CV_SPEED = 40;
+            		m.Max_Speed = CV_SPEED;
+            		pattern = 14;
             	}
-            	if(c.Center[19] > 0){
+            case 14:
+        		m.run( 100, 20* HANDLE_STEP );
+                m.handle( 18 * HANDLE_STEP );
+                if(c.aa != -999)pattern = 10;
+            break;
+ /*           	if(c.Center[19] > 0){
                     m.run( 80, -30 * HANDLE_STEP );
                     m.handle( -30 * HANDLE_STEP );
             	}
@@ -486,18 +511,19 @@ int main( void )
             		pre_crove = 1;
             		pattern = 10;
             	}
+*/
             break;
             case 15:
             	d.led_OUT(0x0);
-                m.run( 50, iServo );
+                m.run( 70, iServo );
                 m.handle( iServo );
-            	if(c.Center[19] > -10 && c.Center[19] < 10) pattern = 10;
+            	if(c.aa > -10 && c.aa < 10) pattern = 10;
                 break;
 
 
 // clank
             case 300:
-            	m.motor(-100,-100,0);
+//            	m.motor(-100,-100,0);
                 clankLR = c.isHalf_Line();
                 if(c.isHalf_Line() != 0 ){
                 	c.F_start = Y_START;
@@ -508,7 +534,7 @@ int main( void )
                     cnt1 = 0;
                 }
 //                if(c.isCurve() == 1)pattern= 10;
-                if(cnt1 > 150)pattern = 10;
+//                if(cnt1 > 150)pattern = 10;
             	break;
             case 305:
             	m.motor(0,0,0);
@@ -660,7 +686,7 @@ int main( void )
                 break;
             case 52:    // Lean change
                 d.led_OUT( 0x3 );
-                m.motor(40,40,0);
+                m.motor(30,30,0);
             //Right Lane Change
                 if(LR == 1){
                     m.handle( 30 * HANDLE_STEP);
@@ -740,7 +766,7 @@ int main( void )
                 if(c.isBlack() == 1) {
                     m.motor(50,50,0);
                 } else {
-                    m.run( 50, iServo );
+                	m.motor(50,50,0);
                     m.handle( iServo );
                 }
                 if( cnt1 > 400 ){
@@ -858,8 +884,8 @@ void intTimer( void )
         		memory[m_number][0] = pattern;
         		memory[m_number][1] = c.aa;
         		memory[m_number][2] = c.cc;
-        		memory[m_number][3] = c.Center[19];
-        		memory[m_number][4] = m.Max_Speed;
+        		memory[m_number][3] = c.Center[39];
+        		memory[m_number][4] = iServo;
         		m_number++;
         		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;
          	}
