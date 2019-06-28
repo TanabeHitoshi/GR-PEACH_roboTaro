@@ -228,13 +228,13 @@ int main( void )
     c.F_start = Y_START;
     switch(d.dipsw_get() & 0x07){
     case 0:
-    	SPEED = 50;
+    	SPEED = 40;
     	break;
     case 1:
-    	SPEED = 52;
+    	SPEED = 42;
     	break;
     case 2:
-    	SPEED = 54;
+    	SPEED = 44;
     	break;
     case 3:
     	SPEED = 56;
