@@ -431,7 +431,7 @@ int main( void )
                 		CV_SPEED = 30;
                 	}
                 }
-                m.run( 100-c.Curve_value()*5, iServo );
+                m.run( 100-c.Curve_value(), iServo );
                 m.handle( iServo );
                 break;
 // Large curve
@@ -522,22 +522,24 @@ int main( void )
 
 
 // clank
-            case 300:
-//            	m.motor(-100,-100,0);
-                clankLR = c.isHalf_Line();
+            case 300:/* クランク前を発見 */
+                //右か左のクランクかを調べる。
+            	clankLR = c.isHalf_Line();
                 if(c.isHalf_Line() != 0 ){
                 	c.F_start = Y_START;
                 	if(cnt1 > 70) Crank_State = 1;
                 	else Crank_State = 0;
                 	m.motor(0,0,0);
-                    pattern = 30;
+                    pattern = 305;
                     cnt1 = 0;
                 }
 //                if(c.isCurve() == 1)pattern= 10;
 //                if(cnt1 > 150)pattern = 10;
             	break;
-            case 305:
-            	m.motor(0,0,0);
+            case 305:/* カメラのエンドまで進む */
+                if(c.isEndBlack()){
+                    pattern = 31;
+                }
             	break;
             case 30:    // Brak;
                 d.led_OUT( 0x2);
@@ -583,11 +585,11 @@ int main( void )
                     pattern = 31;
                 }
             	break;
-            case 31:    // turn 90
+            case 31:// 90°ハンドルを切る
                 d.led_OUT( 0x1);
             //Left Clank
                 if(clankLR == -1){
-                    m.handle( -45 * HANDLE_STEP);
+                    m.handle( -40 * HANDLE_STEP);
                     m.motor(0,50,0);
                 }
             //Right Clank
@@ -595,7 +597,8 @@ int main( void )
                     m.handle( 45 * HANDLE_STEP);
                     m.motor(50,0,0);
                 }
-              if(c.aa != -999){
+                //ラインが斜めに見えなくなるまで
+                if(c.aa != -999){
             	  cnt1 = 0;
             	  pattern = 330;
               }
