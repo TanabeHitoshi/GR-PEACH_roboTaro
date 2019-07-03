@@ -423,12 +423,12 @@ int main( void )
                     mem++;
                 }                
                 if(c.isHalf_Line() == 0){	//クランクで大曲と間違えないように
-                	if(c.Center[19] > 20 && c.aa < 0){
-                		pattern = 11;
+                	if((c.Center[39] > 20 && c.aa < 0) || (c.aa < -20 && c.Center[39] < -15)){
+//                		pattern = 11;
                 		CV_SPEED = 50;
                 	}
-                	if(c.Center[19] < -15 && c.aa > 0){
-                		pattern = 13;
+                	if((c.Center[39] < -20 && c.aa > 0) || (c.aa > 20 && c.Center[39] > 15)){
+//                		pattern = 13;
                 		CV_SPEED = 50;
                 	}
                 }
@@ -444,11 +444,11 @@ int main( void )
                     CV_SPEED += 5;
                     if(CV_SPEED > SPEED)CV_SPEED = SPEED;
 //            	}
-                if(c.aa < 10 && c.aa > -10 && c.cc < 20 && c.cc > -20){
+                if(c.aa < 10 && c.aa > -10 && c.Center[39] < 20 && c.Center[39] > -20){
                 	m.Max_Speed = SPEED;
                 	pattern = 10;
                 }
-               	if(c.aa == -999){
+               	if(c.aa == -999 || c.aa > 0){
                		CV_SPEED = 50;
             		m.Max_Speed = CV_SPEED;
             		pattern = 12;
@@ -458,11 +458,14 @@ int main( void )
         		m.run( 100, 20* HANDLE_STEP );
                 m.handle( 18 * HANDLE_STEP );
                 if(c.aa != -999){
+                	pattern = 11;
+/*
                 	if(c.aa > 30){
                 		pattern = 10;
                 	}else {
                 		pattern = 11;
                 	}
+*/
                 }
             break;
 /*            	if(c.Center[19] < 0){
@@ -490,7 +493,7 @@ int main( void )
                     CV_SPEED += 5;
                     if(CV_SPEED > SPEED)CV_SPEED = SPEED;
 //            	}
-                    if(c.aa < 10 && c.aa > -10 && c.cc < 20 && c.cc > -20){
+                    if(c.aa < 10 && c.aa > -10 && c.Center[39] < 20 && c.Center[39] > -20){
                     	m.Max_Speed = SPEED;
                     	pattern = 10;
                     }
@@ -500,15 +503,18 @@ int main( void )
             		pattern = 14;
             	}
             case 14:
-        		m.run( 100, 20* HANDLE_STEP );
-                m.handle( 18 * HANDLE_STEP );
-                if(c.aa != -999)pattern = 10;
-                if(c.aa != -999){
+        		m.run( 100, -20* HANDLE_STEP );
+                m.handle( -15 * HANDLE_STEP );
+ //               if(c.aa != -999)pattern = 10;
+                if(c.aa != -999 ){
+                	pattern = 13;
+/*
                 	if(c.aa < -30){
                 		pattern = 10;
                 	}else {
-                		pattern = 11;
+                		pattern = 13;
                 	}
+*/
                 }
                 break;
  /*           	if(c.Center[19] > 0){
@@ -692,6 +698,7 @@ int main( void )
                     m.handle( -30 * HANDLE_STEP);
                 }
                 if(c.isBlack()){
+                	cnt1 = 0;
                     pattern = 52;
                 }
                 break;
@@ -701,24 +708,28 @@ int main( void )
             //Right Lane Change
                 if(LR == 1){
                     m.handle( 30 * HANDLE_STEP);
-                    if(c.isOut() == 1)pattern =53;
+//                    if(c.isOut() == 1)pattern =53;
+                    if(c.Center[39] > 0)pattern =53;
                 }
             //Left Lane Change
                 else{
                     m.handle( -30 * HANDLE_STEP);
-                    if(c.isOut() == -1)pattern =53;
+//                    if(c.isOut() == -1)pattern =53;
+                    if(c.Center[39] < 0)pattern =53;
                 }
-                if(c.All_Black()){
-                    pattern = 53;                    
+//                if(c.All_Black()){
+/*                if(cnt1 > 150){
+                   pattern = 53;
                     wait(0.3);
                 }
+*/
                 break;
             case 53:    // Lean change
-                d.led_OUT( 0x2 );
+                d.led_OUT( 0x0 );
                 m.motor(30,30,0);
-                //Right Lane Change
+           //Right Lane Change
                 if(LR == 1) m.handle( 10 * HANDLE_STEP);
-                //Left Lane Change
+          //Left Lane Change
                 else m.handle( -10 * HANDLE_STEP);
                 if(c.cc != -999){
 //                 if(c.cc > -10 && c.cc < 10) {
@@ -775,9 +786,9 @@ int main( void )
                 d.led_OUT( 0x0);
  //               m.run( 100-c.Curve_value(), iServo );
                 if(c.isBlack() == 1) {
-                    m.motor(50,50,0);
+                    m.motor(40,40,0);
                 } else {
-                	m.motor(50,50,0);
+                	m.motor(40,40,0);
                     m.handle( iServo );
                 }
                 if( cnt1 > 400 ){
@@ -857,7 +868,7 @@ int main( void )
                 }
             break;
             case 1015:
-            	pc.printf("number,pattern,aa,cc,Center[39],iServo\r\n");
+            	pc.printf("number,pattern,aa,cc,Center[39],isOut()o\r\n");
             	pattern = 1020;
             break;
             case 1020:
@@ -900,7 +911,7 @@ void intTimer( void )
         		memory[m_number][1] = c.aa;
         		memory[m_number][2] = c.cc;
         		memory[m_number][3] = c.Center[39];
-        		memory[m_number][4] = iServo;
+        		memory[m_number][4] = c.Center[19];
         		m_number++;
         		if(m_number > MAX_MEMORY)m_number = MAX_MEMORY;
          	}
