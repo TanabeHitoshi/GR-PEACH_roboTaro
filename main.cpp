@@ -228,31 +228,32 @@ int main( void )
     c.F_start = Y_START;
     switch(d.dipsw_get() & 0x07){
     case 0:
-    	SPEED = 40;
-    	break;
-    case 1:
-    	SPEED = 45;
-    	break;
-    case 2:
-    	SPEED = 47;
-    	break;
-    case 3:
     	SPEED = 50;
     	break;
-    case 4:
+    case 1:
+    	SPEED = 52;
+    	break;
+    case 2:
     	SPEED = 55;
     	break;
-    case 5:
+    case 3:
     	SPEED = 60;
     	break;
+    case 4:
+    	SPEED = 65;
+    	break;
+    case 5:
+    	SPEED = 70;
+    	break;
     case 6:
-    	SPEED = 62;
+    	SPEED = 75;
     	break;
     case 7:
-    	SPEED = 70;
+    	SPEED = 80;
     	break;
 
     }
+    SPEED = 45;
 #ifdef  MEMORY
         pc.printf("Cource memory\n\r");
         FILE *fp= fopen("/sd/course.txt","a");
@@ -422,13 +423,13 @@ int main( void )
                     mem++;
                 }                
                 if(c.isHalf_Line() == 0){	//クランクで大曲と間違えないように
-                	if(c.Center[19] > 15 && c.aa < 0){
-//                		pattern = 11;
-                		CV_SPEED = 30;
+                	if(c.Center[19] > 20 && c.aa < 0){
+                		pattern = 11;
+                		CV_SPEED = 50;
                 	}
                 	if(c.Center[19] < -15 && c.aa > 0){
-//                		pattern = 13;
-                		CV_SPEED = 30;
+                		pattern = 13;
+                		CV_SPEED = 50;
                 	}
                 }
                 m.run( 100-c.Curve_value(), iServo );
@@ -438,17 +439,17 @@ int main( void )
             case 11:
 //            	if(c.Center[19] > 20){
             		m.Max_Speed = CV_SPEED;
-                    m.run( 100-c.Curve_value()*5 , iServo );
+                    m.run( 100 , iServo );
                     m.handle( iServo );
                     CV_SPEED += 5;
                     if(CV_SPEED > SPEED)CV_SPEED = SPEED;
 //            	}
-                if(c.aa < 10 && c.aa > -10 && c.cc < 10 && c.cc > -10){
+                if(c.aa < 10 && c.aa > -10 && c.cc < 20 && c.cc > -20){
                 	m.Max_Speed = SPEED;
                 	pattern = 10;
                 }
                	if(c.aa == -999){
-               		CV_SPEED = 40;
+               		CV_SPEED = 50;
             		m.Max_Speed = CV_SPEED;
             		pattern = 12;
             	}
@@ -458,7 +459,7 @@ int main( void )
                 m.handle( 18 * HANDLE_STEP );
                 if(c.aa != -999){
                 	if(c.aa > 30){
-                		pattern = 15;
+                		pattern = 10;
                 	}else {
                 		pattern = 11;
                 	}
@@ -484,17 +485,17 @@ int main( void )
             case 13:
 //            	if(c.Center[19] < -20){
             		m.Max_Speed = CV_SPEED;
-                    m.run( 100-c.Curve_value()*5 , iServo );
+                    m.run( 100 , iServo );
                     m.handle( iServo );
                     CV_SPEED += 5;
                     if(CV_SPEED > SPEED)CV_SPEED = SPEED;
 //            	}
-                    if(c.Center[19] < 15 && c.Center[19] > -15){
+                    if(c.aa < 10 && c.aa > -10 && c.cc < 20 && c.cc > -20){
                     	m.Max_Speed = SPEED;
                     	pattern = 10;
                     }
                	if(c.aa == -999){
-               		CV_SPEED = 40;
+               		CV_SPEED = 50;
             		m.Max_Speed = CV_SPEED;
             		pattern = 14;
             	}
@@ -502,7 +503,14 @@ int main( void )
         		m.run( 100, 20* HANDLE_STEP );
                 m.handle( 18 * HANDLE_STEP );
                 if(c.aa != -999)pattern = 10;
-            break;
+                if(c.aa != -999){
+                	if(c.aa < -30){
+                		pattern = 10;
+                	}else {
+                		pattern = 11;
+                	}
+                }
+                break;
  /*           	if(c.Center[19] > 0){
                     m.run( 80, -30 * HANDLE_STEP );
                     m.handle( -30 * HANDLE_STEP );
@@ -837,7 +845,7 @@ int main( void )
             break;
             case 1010:
                 if( d.pushsw_get() ){
-                	pattern = 1020;
+                	pattern = 1015;
                 	m_number = 0;
                 }
                 if( cnt1 < cntLED ) {
@@ -847,6 +855,10 @@ int main( void )
                 } else {
                     cnt1 = 0;
                 }
+            break;
+            case 1015:
+            	pc.printf("number,pattern,aa,cc,Center[39],iServo\r\n");
+            	pattern = 1020;
             break;
             case 1020:
             	pc.printf("%d,%4d,%4d,%4d,%4d,%4d\r\n",m_number,memory[m_number][0],memory[m_number][1],memory[m_number][2],memory[m_number][3],memory[m_number][4]);

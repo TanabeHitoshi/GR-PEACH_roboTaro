@@ -487,7 +487,7 @@ int Camera::CurvePID(void)
         }
 
 //        center = cc;
-//        center = Center[19];
+        center = Center[39];
         iCenter +=  center - preCenter;
         h = center * Kp + iCenter * Ki + (center - preCenter) * Kd;
         preCenter = center;
