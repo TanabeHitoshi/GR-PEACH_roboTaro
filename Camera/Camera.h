@@ -8,7 +8,7 @@
 
 #define     Ka 30
 //37000
-#define     Kp 12.0
+#define     Kp 13.5
 //#define     Ki 0.155
 #define     Ki 0.0
 #define     Kd 25.0

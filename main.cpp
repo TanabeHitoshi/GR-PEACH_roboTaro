@@ -424,12 +424,12 @@ int main( void )
                 }                
                 if(c.isHalf_Line() == 0){	//クランクで大曲と間違えないように
                 	if((c.Center[39] > 20 && c.aa < 0) || (c.aa < -20 && c.Center[39] < -15)){
-//                		pattern = 11;
-                		CV_SPEED = 50;
+                		pattern = 11;
+                		CV_SPEED = 35;
                 	}
                 	if((c.Center[39] < -20 && c.aa > 0) || (c.aa > 20 && c.Center[39] > 15)){
-//                		pattern = 13;
-                		CV_SPEED = 50;
+                		pattern = 13;
+                		CV_SPEED = 35;
                 	}
                 }
                 m.run( 100-c.Curve_value(), iServo );
@@ -437,19 +437,17 @@ int main( void )
                 break;
 // Large curve
             case 11:
-//            	if(c.Center[19] > 20){
-            		m.Max_Speed = CV_SPEED;
-                    m.run( 100 , iServo );
-                    m.handle( iServo );
-                    CV_SPEED += 5;
-                    if(CV_SPEED > SPEED)CV_SPEED = SPEED;
-//            	}
+           		m.Max_Speed = CV_SPEED;
+                m.run( 100 , iServo );
+                m.handle( iServo );
+                CV_SPEED += 3;
+                if(CV_SPEED > SPEED)CV_SPEED = SPEED;
                 if(c.aa < 10 && c.aa > -10 && c.Center[39] < 20 && c.Center[39] > -20){
                 	m.Max_Speed = SPEED;
                 	pattern = 10;
                 }
-               	if(c.aa == -999 || c.aa > 0){
-               		CV_SPEED = 50;
+               	if(c.aa == -999 || c.aa > 30 || c.Center[39] < -10){
+               		CV_SPEED = 35;
             		m.Max_Speed = CV_SPEED;
             		pattern = 12;
             	}
@@ -457,84 +455,32 @@ int main( void )
             case 12:
         		m.run( 100, 20* HANDLE_STEP );
                 m.handle( 18 * HANDLE_STEP );
-                if(c.aa != -999){
+                if(c.aa != -999 || c.aa > 30 || c.Center[39] < -10){
                 	pattern = 11;
-/*
-                	if(c.aa > 30){
-                		pattern = 10;
-                	}else {
-                		pattern = 11;
-                	}
-*/
-                }
             break;
-/*            	if(c.Center[19] < 0){
-                    m.run( 80, 30 * HANDLE_STEP );
-                    m.handle( 30 * HANDLE_STEP );
-            	}
-            	if(c.Center[19] < 25 && c.Center[19] > 0){
-            		pre_crove = 1;
-            		pattern = 10;
-            	}
-				if(c.Center[19] < -20 && c.aa > 0){
-					pattern = 13;
-					CV_SPEED = 40;
-				}
-				if(c.Center[19] < -20 && c.aa < 0){
-                    m.run( 100, 0* HANDLE_STEP );
-                    m.handle( 0 );
- 				}
-*/            break;
             case 13:
-//            	if(c.Center[19] < -20){
-            		m.Max_Speed = CV_SPEED;
-                    m.run( 100 , iServo );
-                    m.handle( iServo );
-                    CV_SPEED += 5;
-                    if(CV_SPEED > SPEED)CV_SPEED = SPEED;
-//            	}
-                    if(c.aa < 10 && c.aa > -10 && c.Center[39] < 20 && c.Center[39] > -20){
-                    	m.Max_Speed = SPEED;
-                    	pattern = 10;
-                    }
-               	if(c.aa == -999){
-               		CV_SPEED = 50;
+            	m.Max_Speed = CV_SPEED;
+                m.run( 100 , iServo );
+                m.handle( iServo );
+                CV_SPEED += 3;
+                if(CV_SPEED > SPEED)CV_SPEED = SPEED;
+                if(c.aa < 15 && c.aa > -15 && c.cc < 20 && c.cc > -20){
+                	m.Max_Speed = SPEED;
+                    pattern = 10;
+                }
+                if(c.aa == -999  || c.aa < -30 || c.Center[39] > 10){
+               		CV_SPEED = 35;
             		m.Max_Speed = CV_SPEED;
             		pattern = 14;
             	}
+            break;
             case 14:
         		m.run( 100, -20* HANDLE_STEP );
                 m.handle( -15 * HANDLE_STEP );
- //               if(c.aa != -999)pattern = 10;
-                if(c.aa != -999 ){
+                if(c.aa != -999 || c.aa < -30 || c.Center[39] > 10){
                 	pattern = 13;
-/*
-                	if(c.aa < -30){
-                		pattern = 10;
-                	}else {
-                		pattern = 13;
-                	}
-*/
                 }
                 break;
- /*           	if(c.Center[19] > 0){
-                    m.run( 80, -30 * HANDLE_STEP );
-                    m.handle( -30 * HANDLE_STEP );
-            	}
-            	if(c.Center[19] > -25 && c.Center[19] < 0){
-            		pre_crove = 1;
-            		pattern = 10;
-            	}
-*/
-            break;
-            case 15:
-            	d.led_OUT(0x0);
-                m.run( 70, iServo );
-                m.handle( iServo );
-            	if(c.aa > -10 && c.aa < 10) pattern = 10;
-                break;
-
-
 // clank
             case 300:/* クランク前を発見 */
                 //右か左のクランクかを調べる。
